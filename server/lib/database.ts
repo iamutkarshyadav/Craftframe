@@ -185,4 +185,4 @@ export const initializeDatabase = () => {
 };
 
 // Initialize the database with demo data
-initializeDatabase().catch(console.error);
+initializeDatabase();
