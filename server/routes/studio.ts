@@ -174,17 +174,11 @@ export const handleVideoGeneration = [
         duration,
       };
 
-      // Generate video
-      let result;
-      if (isReplicateConfigured()) {
-        console.log("Using Replicate API for video generation");
-        result = await generateVideo(request);
-      } else {
-        console.log("Using demo mode for video generation");
-        // Simulate longer delay for video
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        result = getDemoResult("video", generation.id);
-      }
+      // Generate video with free API
+      console.log("Using free video generation API");
+      // Simulate delay for video processing
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const result = await generateVideo(request);
 
       // Update generation with result
       updateGeneration(generation.id, {
