@@ -85,6 +85,13 @@ export default function Index() {
               <ThemeToggle />
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => (window.location.href = "/dashboard")}
+                  >
+                    Dashboard
+                  </Button>
                   <span className="text-sm text-muted-foreground hidden sm:inline">
                     {user?.name}
                   </span>
