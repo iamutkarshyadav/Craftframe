@@ -173,10 +173,19 @@ export default function Dashboard() {
     }
   };
 
-  const pollGenerationStatus = async (generationId: string) => {
+  const pollGenerationStatus = async (
+    generationId: string,
+    type: "image" | "video",
+  ) => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/generate/${generationId}`, {
+        // Use new Hugging Face specific endpoints
+        const endpoint =
+          type === "image"
+            ? `/api/generate/image/${generationId}`
+            : `/api/generate/video/${generationId}`;
+
+        const response = await fetch(endpoint, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("aicreate-token")}`,
           },
@@ -184,7 +193,10 @@ export default function Dashboard() {
 
         if (response.ok) {
           const generation = await response.json();
-          setActiveGeneration(generation);
+          setActiveGeneration({
+            ...generation,
+            type, // Ensure type is included
+          });
 
           if (
             generation.status === "completed" ||
@@ -193,7 +205,8 @@ export default function Dashboard() {
             clearInterval(pollInterval);
             fetchGenerations(); // Refresh the list
             if (generation.status === "completed") {
-              setActiveGeneration(null); // Clear active generation
+              // Show success message briefly, then clear
+              setTimeout(() => setActiveGeneration(null), 3000);
             }
           }
         }
