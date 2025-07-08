@@ -56,10 +56,10 @@ export const handleVideoGeneration = [
         });
       }
 
-      // Calculate cost based on model and duration
-      let cost = 8; // Base cost for Wan2.1-T2V-14B
-      if (duration > 5) cost += 2;
-      if (quality === "4k") cost += 3;
+      // Calculate cost based on model and duration (reduced for testing)
+      let cost = 3; // Base cost for video generation
+      if (duration > 5) cost += 1;
+      if (quality === "4k") cost += 2;
       else if (quality === "full-hd") cost += 1;
 
       // Check if user has enough credits
