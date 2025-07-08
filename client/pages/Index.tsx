@@ -148,11 +148,11 @@ export default function Index() {
               className="bg-gradient-ai hover:opacity-90 px-6 md:px-8 py-4 md:py-6 text-base md:text-lg"
               onClick={() =>
                 isAuthenticated
-                  ? (window.location.href = "/dashboard")
+                  ? (window.location.href = "/generate")
                   : setAuthModalOpen(true)
               }
             >
-              {isAuthenticated ? "Go to Dashboard" : "Start Creating Free"}{" "}
+              {isAuthenticated ? "Open Studio" : "Start Creating Free"}{" "}
               <ArrowRight className="w-4 md:w-5 h-4 md:h-5 ml-2" />
             </Button>
             <Button
