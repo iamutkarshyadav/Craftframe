@@ -38,6 +38,7 @@ import {
   ChevronDown,
   Menu,
   X,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
