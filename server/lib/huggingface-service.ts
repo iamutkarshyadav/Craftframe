@@ -58,11 +58,11 @@ export async function generateImage(prompt: string): Promise<GenerationResult> {
       };
     }
 
-    console.log("Generating image with Flux model for prompt:", prompt);
+    console.log("Generating image with FLUX.1-dev model for prompt:", prompt);
 
-    // Real Hugging Face API call using Flux model
+    // Use Hugging Face Inference API with FLUX.1-dev model
     const response = await fetch(
-      "https://router.huggingface.co/fal-ai/fal-ai/flux/dev",
+      "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev",
       {
         headers: {
           Authorization: `Bearer ${HF_TOKEN}`,
@@ -70,34 +70,37 @@ export async function generateImage(prompt: string): Promise<GenerationResult> {
         },
         method: "POST",
         body: JSON.stringify({
-          sync_mode: true,
-          prompt: prompt,
-          image_size: "landscape_4_3",
-          num_inference_steps: 28,
-          guidance_scale: 3.5,
-          num_images: 1,
-          enable_safety_checker: true,
+          inputs: prompt,
+          parameters: {
+            guidance_scale: 3.5,
+            num_inference_steps: 28,
+            max_sequence_length: 256,
+          },
         }),
       },
     );
 
     if (!response.ok) {
-      throw new Error(`Image generation failed: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(
+        `Image generation failed: ${response.statusText} - ${errorText}`,
+      );
     }
 
-    const result = await response.json();
+    // The response is a blob (image data)
+    const imageBlob = await response.blob();
 
-    if (result.images && result.images.length > 0) {
-      // Return the first generated image
-      return {
-        id: generationId,
-        url: result.images[0].url,
-        status: "completed",
-        progress: 100,
-      };
-    } else {
-      throw new Error("No images generated");
-    }
+    // Convert blob to base64 for easier handling
+    const arrayBuffer = await imageBlob.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    const dataUrl = `data:image/png;base64,${base64}`;
+
+    return {
+      id: generationId,
+      url: dataUrl,
+      status: "completed",
+      progress: 100,
+    };
   } catch (error) {
     console.error("Image generation error:", error);
     return {
