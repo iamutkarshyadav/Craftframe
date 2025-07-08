@@ -422,7 +422,7 @@ export function PromptCanvas({ onGenerate, isGenerating }: PromptCanvasProps) {
         {/* Generate Button */}
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {type === "image" ? "2 credits" : "5 credits"} per generation
+            {type === "image" ? "1 credit" : "3 credits"} per generation
           </div>
           <Button
             onClick={handleGenerate}
