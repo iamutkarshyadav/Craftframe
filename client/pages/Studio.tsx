@@ -747,45 +747,106 @@ export default function Studio() {
                     </div>
 
                     {/* Advanced Settings */}
-                    {showAdvanced && (
-                      <div className="space-y-6 p-4 border rounded-lg bg-muted/30">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <Label className="text-sm font-medium mb-2 block">
-                              Steps: {imageSteps[0]}
-                            </Label>
-                            <Slider
-                              value={imageSteps}
-                              onValueChange={setImageSteps}
-                              max={50}
-                              min={10}
-                              step={5}
-                              className="w-full"
-                            />
-                            <div className="text-xs text-muted-foreground mt-1">
-                              More steps = higher quality, slower generation
-                            </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <Settings className="h-4 w-4 text-purple-600" />
+                          <span className="font-medium">Advanced Settings</span>
+                          <Badge variant="secondary" className="text-xs">
+                            Pro
+                          </Badge>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAdvanced(!showAdvanced)}
+                          className="h-8"
+                        >
+                          {showAdvanced ? "Hide" : "Show"}
+                        </Button>
+                      </div>
+
+                      {showAdvanced && (
+                        <div className="space-y-6 p-6 border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-lg bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20">
+                          <div className="text-center mb-4">
+                            <h4 className="font-semibold text-purple-700 dark:text-purple-300">
+                              Fine-Tune Your Generation
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Adjust these parameters for precise control over
+                              image quality
+                            </p>
                           </div>
 
-                          <div>
-                            <Label className="text-sm font-medium mb-2 block">
-                              CFG Scale: {imageCfgScale[0]}
-                            </Label>
-                            <Slider
-                              value={imageCfgScale}
-                              onValueChange={setImageCfgScale}
-                              max={20}
-                              min={1}
-                              step={0.5}
-                              className="w-full"
-                            />
-                            <div className="text-xs text-muted-foreground mt-1">
-                              How closely to follow the prompt
-                            </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card className="p-4 bg-background/50">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-sm font-medium">
+                                    Steps
+                                  </Label>
+                                  <Badge variant="outline" className="text-xs">
+                                    {imageSteps[0]}
+                                  </Badge>
+                                </div>
+                                <Slider
+                                  value={imageSteps}
+                                  onValueChange={setImageSteps}
+                                  max={50}
+                                  min={10}
+                                  step={5}
+                                  className="w-full"
+                                />
+                                <div className="text-xs text-muted-foreground">
+                                  More steps = higher quality, slower generation
+                                </div>
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                  <span>Fast (10)</span>
+                                  <span>Balanced (20)</span>
+                                  <span>Quality (50)</span>
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4 bg-background/50">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-sm font-medium">
+                                    CFG Scale
+                                  </Label>
+                                  <Badge variant="outline" className="text-xs">
+                                    {imageCfgScale[0]}
+                                  </Badge>
+                                </div>
+                                <Slider
+                                  value={imageCfgScale}
+                                  onValueChange={setImageCfgScale}
+                                  max={20}
+                                  min={1}
+                                  step={0.5}
+                                  className="w-full"
+                                />
+                                <div className="text-xs text-muted-foreground">
+                                  How closely to follow the prompt
+                                </div>
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                  <span>Creative (1-5)</span>
+                                  <span>Balanced (7-12)</span>
+                                  <span>Precise (15-20)</span>
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <div className="flex items-center justify-center gap-2 pt-2 border-t border-purple-200/50 dark:border-purple-800/50">
+                            <Badge variant="secondary" className="text-xs">
+                              💡 Tip: Higher values = better quality but slower
+                              generation
+                            </Badge>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </TabsContent>
 
                   {/* Video Generation */}
