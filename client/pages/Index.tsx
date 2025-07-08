@@ -143,7 +143,7 @@ export default function Index() {
               className="bg-gradient-ai hover:opacity-90 px-6 md:px-8 py-4 md:py-6 text-base md:text-lg"
               onClick={() =>
                 isAuthenticated
-                  ? (window.location.href = "/generate")
+                  ? (window.location.href = "/studio")
                   : setAuthModalOpen(true)
               }
             >
