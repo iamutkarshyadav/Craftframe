@@ -1,0 +1,348 @@
+import { RequestHandler } from "express";
+import jwt from "jsonwebtoken";
+import {
+  findUserById,
+  updateUser,
+  createGeneration,
+  updateGeneration,
+  findGenerationById,
+  findGenerationsByUserId,
+} from "../lib/database";
+import {
+  generateImage,
+  generateVideo,
+  isServiceConfigured,
+  getDemoResult,
+  GenerationRequest,
+} from "../lib/ai-service-production";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
+
+// Middleware to authenticate user
+const authenticate: RequestHandler = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+
+    const user = findUserById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    (req as any).user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+// Generate image
+export const handleImageGeneration = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const {
+        prompt,
+        model = "flux-dev",
+        size = "1024x1024",
+        category = "photorealistic",
+        steps,
+        cfg_scale,
+      } = req.body;
+
+      if (!prompt || prompt.trim().length === 0) {
+        return res.status(400).json({ message: "Prompt is required" });
+      }
+
+      if (prompt.length > 1000) {
+        return res.status(400).json({
+          message: "Prompt must be less than 1000 characters",
+        });
+      }
+
+      // Check credits based on model
+      const modelCredits: { [key: string]: number } = {
+        "flux-pro": 3,
+        "flux-dev": 2,
+        "flux-schnell": 1,
+      };
+      const cost = modelCredits[model] || 1;
+
+      if (user.credits < cost) {
+        return res.status(400).json({
+          message: "Insufficient credits",
+          required: cost,
+          available: user.credits,
+        });
+      }
+
+      // Create generation record
+      const generation = createGeneration({
+        userId: user.id,
+        type: "image",
+        prompt: prompt.trim(),
+        model: model,
+        url: "",
+        status: "pending",
+        cost,
+      });
+
+      // Deduct credits
+      updateUser(user.id, { credits: user.credits - cost });
+
+      // Start generation
+      const request: GenerationRequest = {
+        prompt: prompt.trim(),
+        model,
+        size,
+        category,
+        steps,
+        cfg_scale,
+      };
+
+      console.log("Image generation request:", request);
+
+      // Generate image with enhanced AI service
+      try {
+        const result = await generateImage(request);
+
+        // Update generation with result
+        updateGeneration(generation.id, {
+          url: result.url || "",
+          status: result.status === "completed" ? "completed" : "failed",
+        });
+
+        if (result.status === "failed") {
+          // Refund credits on failure
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
+        }
+
+        res.json({
+          id: generation.id,
+          url: result.url,
+          status: result.status,
+          metadata: result.metadata,
+          message:
+            result.status === "completed"
+              ? "Image generated successfully"
+              : "Image generation failed",
+        });
+      } catch (error) {
+        console.error("Image generation error:", error);
+
+        // Refund credits on error
+        const currentUser = findUserById(user.id);
+        if (currentUser) {
+          updateUser(user.id, { credits: currentUser.credits + cost });
+        }
+
+        updateGeneration(generation.id, {
+          status: "failed",
+        });
+
+        res.status(500).json({
+          message: "Image generation failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    } catch (error) {
+      console.error("Image generation handler error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];
+
+// Generate video
+export const handleVideoGeneration = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const {
+        prompt,
+        model = "huggingface",
+        duration = 3,
+        fps = 24,
+      } = req.body;
+
+      if (!prompt || prompt.trim().length === 0) {
+        return res.status(400).json({ message: "Prompt is required" });
+      }
+
+      if (prompt.length > 1000) {
+        return res.status(400).json({
+          message: "Prompt must be less than 1000 characters",
+        });
+      }
+
+      // Check credits based on model
+      const modelCredits: { [key: string]: number } = {
+        huggingface: 4,
+        pika: 8,
+        luma: 6,
+        runway: 10,
+        demo: 0,
+      };
+      const cost = modelCredits[model] || 3;
+
+      if (user.credits < cost) {
+        return res.status(400).json({
+          message: "Insufficient credits",
+          required: cost,
+          available: user.credits,
+        });
+      }
+
+      // Create generation record
+      const generation = createGeneration({
+        userId: user.id,
+        type: "video",
+        prompt: prompt.trim(),
+        model: model,
+        url: "",
+        status: "pending",
+        cost,
+      });
+
+      // Deduct credits (except for demo)
+      if (cost > 0) {
+        updateUser(user.id, { credits: user.credits - cost });
+      }
+
+      // Start generation
+      const request: GenerationRequest = {
+        prompt: prompt.trim(),
+        model,
+        duration,
+        fps,
+      };
+
+      console.log("Video generation request:", request);
+
+      // Generate video with enhanced AI service
+      try {
+        const result = await generateVideo(request);
+
+        // Update generation with result
+        updateGeneration(generation.id, {
+          url: result.url || "",
+          status: result.status === "completed" ? "completed" : "failed",
+        });
+
+        if (result.status === "failed" && cost > 0) {
+          // Refund credits on failure
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
+        }
+
+        res.json({
+          id: generation.id,
+          url: result.url,
+          status: result.status,
+          metadata: result.metadata,
+          message:
+            result.status === "completed"
+              ? "Video generated successfully"
+              : "Video generation failed",
+        });
+      } catch (error) {
+        console.error("Video generation error:", error);
+
+        // Refund credits on error
+        if (cost > 0) {
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
+        }
+
+        updateGeneration(generation.id, {
+          status: "failed",
+        });
+
+        res.status(500).json({
+          message: "Video generation failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    } catch (error) {
+      console.error("Video generation handler error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];
+
+// Get generation status
+export const handleGetImageStatus = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const { id } = req.params;
+
+      const generation = findGenerationById(id);
+      if (!generation) {
+        return res.status(404).json({ message: "Generation not found" });
+      }
+
+      if (generation.userId !== user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json({
+        id: generation.id,
+        status: generation.status,
+        url: generation.url,
+        prompt: generation.prompt,
+        model: generation.model,
+        createdAt: generation.createdAt,
+      });
+    } catch (error) {
+      console.error("Get image status error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];
+
+// Get video generation status (same as image)
+export const handleGetVideoStatus = handleGetImageStatus;
+
+// Get recent generations for studio
+export const handleGetRecentGenerations = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const { limit = 10 } = req.query;
+
+      let generations = findGenerationsByUserId(user.id);
+
+      // Sort by creation date (newest first) and limit results
+      generations = generations
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )
+        .slice(0, parseInt(limit));
+
+      res.json({
+        generations,
+        total: generations.length,
+      });
+    } catch (error) {
+      console.error("Get recent generations error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];
