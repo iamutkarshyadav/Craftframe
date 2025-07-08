@@ -277,6 +277,25 @@ export default function Generation() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Processing Animation Overlay */}
+      {isGenerating && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center">
+          <Card className="w-96 bg-background border-primary">
+            <CardContent className="pt-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 relative">
+                <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
+                <Sparkles className="w-8 h-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary animate-pulse" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Creating Magic ✨</h3>
+              <p className="text-muted-foreground">
+                Our AI is working on your creation...
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
