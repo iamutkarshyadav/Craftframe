@@ -144,11 +144,13 @@ export const deleteSession = (token: string): boolean => {
 
 // Initialize with some demo data
 export const initializeDatabase = async () => {
-  // Check if demo user already exists to avoid duplicates
+  // Clear existing demo user if it exists (to reset password)
   const existingDemoUser = findUserByEmail("demo@aicreate.app");
   if (existingDemoUser) {
-    console.log("Demo user already exists, skipping initialization");
-    return;
+    console.log(
+      "Removing existing demo user to recreate with correct password",
+    );
+    users.delete(existingDemoUser.id);
   }
 
   // Generate proper hash for demo password
