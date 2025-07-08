@@ -78,11 +78,15 @@ export async function generateImage(
       // Continue anyway as the URL might still work
     }
 
+    // Use our proxy to serve the image to avoid any CORS issues
+    const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+
     console.log("Pollinations image generated:", imageUrl);
+    console.log("Using proxy URL:", proxyUrl);
 
     return {
       id: generationId,
-      url: imageUrl,
+      url: proxyUrl,
       status: "completed",
     };
   } catch (error) {
