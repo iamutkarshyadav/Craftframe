@@ -82,11 +82,9 @@ export default function Generation() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  // Redirect to auth if not authenticated
+  // Handle authentication and data loading
   useEffect(() => {
-    if (!isAuthenticated) {
-      setAuthModalOpen(true);
-    } else {
+    if (isAuthenticated) {
       fetchGenerations();
     }
   }, [isAuthenticated]);
