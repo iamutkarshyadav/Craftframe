@@ -56,8 +56,8 @@ export const handleImageGeneration = [
         });
       }
 
-      // Calculate cost based on model
-      const cost = model === "flux-dev" ? 2 : 1;
+      // Calculate cost based on model (reduced for testing)
+      const cost = model === "flux-dev" ? 1 : 1;
 
       // Check if user has enough credits
       if (user.credits < cost) {
