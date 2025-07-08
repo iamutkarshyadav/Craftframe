@@ -1295,12 +1295,12 @@ export default function Index() {
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("pricing")}
                     className="hover:text-foreground transition-colors"
                   >
-                    API
-                  </a>
+                    API Docs
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1309,36 +1309,36 @@ export default function Index() {
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("hero")}
                     className="hover:text-foreground transition-colors"
                   >
                     About
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("testimonials")}
                     className="hover:text-foreground transition-colors"
                   >
-                    Blog
-                  </a>
+                    Success Stories
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/studio"
                     className="hover:text-foreground transition-colors"
                   >
                     Careers
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("stats")}
                     className="hover:text-foreground transition-colors"
                   >
                     Press
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1347,36 +1347,36 @@ export default function Index() {
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("how-it-works")}
                     className="hover:text-foreground transition-colors"
                   >
                     Help Center
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/studio"
                     className="hover:text-foreground transition-colors"
                   >
                     Contact
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("stats")}
                     className="hover:text-foreground transition-colors"
                   >
                     Status
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <button
+                    onClick={() => scrollToSection("cta")}
                     className="hover:text-foreground transition-colors"
                   >
                     Privacy
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1425,7 +1425,7 @@ const gridPatternStyle = `
     background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
     background-size: 20px 20px;
   }
-  
+
   .dark .bg-grid-pattern {
     background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
   }
