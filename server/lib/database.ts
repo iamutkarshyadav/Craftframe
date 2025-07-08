@@ -74,6 +74,10 @@ export const updateUser = (
   return updatedUser;
 };
 
+export const deleteUser = (id: string): boolean => {
+  return users.delete(id);
+};
+
 // Generation operations
 export const createGeneration = (
   generationData: Omit<Generation, "id" | "createdAt" | "updatedAt">,
