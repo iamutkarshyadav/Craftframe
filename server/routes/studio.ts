@@ -14,7 +14,7 @@ import {
   isServiceConfigured,
   getDemoResult,
   GenerationRequest,
-} from "../lib/ai-service-v3";
+} from "../lib/ai-service-enhanced";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
 
