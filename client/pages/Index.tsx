@@ -34,32 +34,12 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState<"image" | "video">("image");
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
-  // Auto-advance carousel
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % sampleGenerations.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const navigateToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % sampleGenerations.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide(
-      (prev) =>
-        (prev - 1 + sampleGenerations.length) % sampleGenerations.length,
-    );
-  };
+  // Get showcase content
+  const featuredContent = getFeaturedContent();
+  const showcaseContent = getRandomContent(8);
 
   return (
     <div className="min-h-screen bg-background">
