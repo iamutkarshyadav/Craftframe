@@ -58,6 +58,26 @@ export async function generateImage(
 
     console.log("Generated image URL:", imageUrl);
 
+    // Test the actual image generation by making a request
+    try {
+      const testResponse = await fetch(imageUrl, {
+        method: "GET",
+        headers: {
+          "User-Agent": "AICreate/1.0",
+        },
+      });
+
+      if (testResponse.ok) {
+        console.log("Image generation successful");
+      } else {
+        console.log("Image generation test failed:", testResponse.status);
+        // Still return the URL as Pollinations might work when accessed directly by browser
+      }
+    } catch (testError) {
+      console.log("Image generation test error:", testError);
+      // Continue anyway as the URL might still work
+    }
+
     console.log("Pollinations image generated:", imageUrl);
 
     return {
