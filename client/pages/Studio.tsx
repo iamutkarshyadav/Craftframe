@@ -52,11 +52,11 @@ export default function Studio() {
   const [error, setError] = useState("");
 
   // Image settings
-  const [imageModel, setImageModel] = useState("flux-schnell");
+  const [imageModel, setImageModel] = useState("flux");
   const [imageSize, setImageSize] = useState("1024x1024");
 
   // Video settings
-  const [videoModel, setVideoModel] = useState("stable-video");
+  const [videoModel, setVideoModel] = useState("huggingface");
   const [videoDuration, setVideoDuration] = useState("3");
 
   const handleGenerate = async () => {
