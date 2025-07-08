@@ -532,9 +532,14 @@ export default function Index() {
             <Button
               size="lg"
               className="bg-gradient-ai hover:opacity-90 px-8 py-6 text-lg"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() =>
+                isAuthenticated
+                  ? (window.location.href = "/dashboard")
+                  : setAuthModalOpen(true)
+              }
             >
-              Start Creating Now <ArrowRight className="w-5 h-5 ml-2" />
+              {isAuthenticated ? "Go to Dashboard" : "Start Creating Now"}{" "}
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button size="lg" variant="outline" className="px-8 py-6 text-lg">
               <ExternalLink className="w-5 h-5 mr-2" />
@@ -543,6 +548,9 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Authentication Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
       {/* Footer */}
       <footer className="border-t border-border bg-surface">
