@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AuthModal } from "@/components/auth/auth-modal";
 import {
   ArrowRight,
   Sparkles,
@@ -33,6 +34,7 @@ import {
   sampleGenerations,
   useCases,
 } from "@/lib/data";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState<"image" | "video">("image");
