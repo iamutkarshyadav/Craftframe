@@ -37,6 +37,7 @@ import {
   getUserStats,
   toggleFavorite,
 } from "./routes/dashboard";
+import { handleImageProxy } from "./routes/image-proxy";
 
 export function createServer() {
   const app = express();
