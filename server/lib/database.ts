@@ -143,12 +143,23 @@ export const deleteSession = (token: string): boolean => {
 };
 
 // Initialize with some demo data
-export const initializeDatabase = () => {
+export const initializeDatabase = async () => {
+  // Check if demo user already exists to avoid duplicates
+  const existingDemoUser = findUserByEmail("demo@aicreate.app");
+  if (existingDemoUser) {
+    console.log("Demo user already exists, skipping initialization");
+    return;
+  }
+
+  // Create proper password hash for "demo123"
+  const bcrypt = require("bcryptjs");
+  const hashedPassword = await bcrypt.hash("demo123", 10);
+
   // Demo user with more credits
   const demoUser = createUser({
     email: "demo@aicreate.app",
     name: "Demo User",
-    password: "$2a$10$rOKUZEqS3lhJ8O7Ny3qLl.EfMqZ8xFKd8vTAhGqLhLKJG8WqYZm1m", // password: "demo123"
+    password: hashedPassword,
     plan: "pro",
     credits: 1000,
   });
