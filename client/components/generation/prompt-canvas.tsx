@@ -438,7 +438,8 @@ export function PromptCanvas({ onGenerate, isGenerating }: PromptCanvasProps) {
             ) : (
               <>
                 <Sparkles className="w-4 h-4 mr-2" />
-                Generate {type === "image" ? "Image" : "Video"}
+                Generate{" "}
+                {type === "image" ? "Image (1 credit)" : "Video (3 credits)"}
               </>
             )}
           </Button>
