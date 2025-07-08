@@ -88,6 +88,9 @@ export const handleImageGeneration = [
         prompt: prompt.trim(),
         model,
         size,
+        steps: req.body.steps,
+        cfg_scale: req.body.cfg_scale,
+        style: req.body.style,
       };
 
       // Generate image with Pollinations
@@ -173,6 +176,7 @@ export const handleVideoGeneration = [
         prompt: prompt.trim(),
         model,
         duration,
+        fps: req.body.fps,
       };
 
       // Generate video with free API
