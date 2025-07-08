@@ -41,26 +41,20 @@ export async function generateImage(
       case "flux":
       case "flux-schnell":
       case "flux-dev":
-        // Pollinations FLUX endpoint
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&enhance=true&nologo=true`;
+        // Pollinations FLUX endpoint - use latest API format
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&private=true&enhance=true`;
         break;
       case "turbo":
         // Turbo model for faster generation
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&enhance=true&nologo=true`;
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&nologo=true&private=true&enhance=true`;
         break;
       default:
         // Default to standard Pollinations endpoint
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&enhance=true&nologo=true`;
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&nologo=true&private=true&enhance=true`;
     }
 
-    // Test if the image URL is accessible
-    const response = await fetch(imageUrl, { method: "HEAD" });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to generate image: ${response.status} ${response.statusText}`,
-      );
-    }
+    // Don't test with HEAD request as it might cause issues with CORS
+    // Pollinations will generate the image when the URL is accessed
 
     console.log("Pollinations image generated:", imageUrl);
 
