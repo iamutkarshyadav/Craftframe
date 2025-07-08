@@ -383,7 +383,7 @@ export default function Index() {
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                AICreate
+                CraftFrame
               </span>
             </Link>
 
@@ -1258,7 +1258,7 @@ export default function Index() {
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  AICreate
+                  CraftFrame
                 </span>
               </Link>
               <p className="text-sm text-muted-foreground mb-4 max-w-xs">
