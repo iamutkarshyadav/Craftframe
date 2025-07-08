@@ -144,13 +144,13 @@ export const deleteSession = (token: string): boolean => {
 
 // Initialize with some demo data
 export const initializeDatabase = () => {
-  // Demo user
+  // Demo user with more credits
   const demoUser = createUser({
     email: "demo@aicreate.app",
     name: "Demo User",
     password: "$2a$10$rOKUZEqS3lhJ8O7Ny3qLl.EfMqZ8xFKd8vTAhGqLhLKJG8WqYZm1m", // password: "demo123"
-    plan: "creator",
-    credits: 150,
+    plan: "pro",
+    credits: 1000,
   });
 
   // Demo generations
