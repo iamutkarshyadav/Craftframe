@@ -34,27 +34,29 @@ export async function generateImage(
       height = h;
     }
 
-    // Build Pollinations URL based on model
+    // Build Pollinations URL - use simpler format that works reliably
+    // Add timestamp for cache busting to ensure fresh generation
+    const timestamp = Date.now();
+
     let imageUrl = "";
 
     switch (request.model) {
       case "flux":
       case "flux-schnell":
       case "flux-dev":
-        // Pollinations FLUX endpoint - use latest API format
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&private=true&enhance=true`;
+        // Pollinations FLUX endpoint
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&seed=${timestamp}`;
         break;
       case "turbo":
         // Turbo model for faster generation
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&nologo=true&private=true&enhance=true`;
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&seed=${timestamp}`;
         break;
       default:
-        // Default to standard Pollinations endpoint
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&nologo=true&private=true&enhance=true`;
+        // Default to standard Pollinations endpoint (most reliable)
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${timestamp}`;
     }
 
-    // Don't test with HEAD request as it might cause issues with CORS
-    // Pollinations will generate the image when the URL is accessed
+    console.log("Generated image URL:", imageUrl);
 
     console.log("Pollinations image generated:", imageUrl);
 
