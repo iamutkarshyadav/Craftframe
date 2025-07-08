@@ -25,6 +25,12 @@ import {
   handleVideoStatus,
   handleDirectVideoGeneration,
 } from "./routes/generate-video";
+import {
+  handleImageGeneration as handleStudioImageGeneration,
+  handleVideoGeneration as handleStudioVideoGeneration,
+  handleGetImageStatus as handleStudioImageStatus,
+  handleGetVideoStatus as handleStudioVideoStatus,
+} from "./routes/studio";
 
 export function createServer() {
   const app = express();
