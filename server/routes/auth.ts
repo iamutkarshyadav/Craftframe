@@ -166,3 +166,40 @@ export const handleLogout: RequestHandler = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Create demo user (for setup)
+export const handleCreateDemoUser: RequestHandler = async (req, res) => {
+  try {
+    // Check if demo user already exists
+    const existingUser = findUserByEmail("demo@aicreate.app");
+    if (existingUser) {
+      return res.json({
+        message: "Demo user already exists",
+        user: { email: existingUser.email, name: existingUser.name },
+      });
+    }
+
+    // Hash the password properly
+    const hashedPassword = await bcrypt.hash("demo123", 10);
+
+    // Create the demo user
+    const user = createUser({
+      email: "demo@aicreate.app",
+      name: "Demo User",
+      password: hashedPassword,
+      plan: "pro",
+      credits: 1000,
+    });
+
+    console.log("Demo user created successfully");
+
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({
+      message: "Demo user created successfully",
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    console.error("Create demo user error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
