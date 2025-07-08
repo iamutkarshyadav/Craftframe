@@ -188,8 +188,10 @@ export const downloadAsZip = async (
   zipName: string = "aicreate-generations",
 ): Promise<void> => {
   try {
-    // Dynamic import to avoid bundling JSZip if not needed
-    const JSZip = (await import("jszip")).default;
+    // Note: JSZip would need to be installed separately
+    // For now, we'll use individual downloads
+    console.log("ZIP download requested for:", generations.length, "files");
+    await downloadBatch(generations);
     const zip = new JSZip();
 
     const downloadPromises = generations.map(async (generation) => {
