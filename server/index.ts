@@ -15,6 +15,16 @@ import {
   handleGetModels,
   handleQueueStatus,
 } from "./routes/generate";
+import {
+  handleImageGeneration,
+  handleImageStatus,
+  handleDirectImageGeneration,
+} from "./routes/generate-image";
+import {
+  handleVideoGeneration,
+  handleVideoStatus,
+  handleDirectVideoGeneration,
+} from "./routes/generate-video";
 
 export function createServer() {
   const app = express();
