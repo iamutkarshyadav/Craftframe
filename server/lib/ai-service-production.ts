@@ -117,7 +117,18 @@ export async function generateVideo(
         return runwayResult;
       }
     } catch (error) {
-      console.log("Runway failed, using enhanced fallback");
+      console.log("Runway failed, trying Hugging Face:");
+    }
+
+    // Try Hugging Face Models
+    try {
+      const hfResult = await generateVideoWithHuggingFace(request);
+      if (hfResult.url) {
+        console.log("Successfully generated video with Hugging Face");
+        return hfResult;
+      }
+    } catch (error) {
+      console.log("Hugging Face failed, using enhanced fallback");
     }
 
     // Enhanced fallback with better video selection
