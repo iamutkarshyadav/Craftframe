@@ -192,10 +192,16 @@ export default function Studio() {
         }),
       });
 
-      const data = await response.json();
       if (response.ok) {
+        const data = await response.json();
         localStorage.setItem("aicreate-token", data.token);
         window.location.reload();
+      } else {
+        console.error(
+          "Demo login failed:",
+          response.status,
+          response.statusText,
+        );
       }
     } catch (error) {
       console.error("Demo login failed:", error);
