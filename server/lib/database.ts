@@ -148,32 +148,9 @@ export const deleteSession = (token: string): boolean => {
 
 // Initialize with some demo data
 export const initializeDatabase = () => {
-  // Skip creating demo user here - it will be created via API call
   console.log(
     "Database initialized. Use /api/auth/create-demo to create demo user.",
   );
-
-  // Demo generations
-  createGeneration({
-    userId: demoUser.id,
-    type: "image",
-    prompt: "A majestic dragon soaring through clouds at sunset, digital art",
-    model: "Stable Diffusion XL",
-    url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=512&h=512&fit=crop",
-    status: "completed",
-    cost: 2,
-    liked: true,
-  });
-
-  createGeneration({
-    userId: demoUser.id,
-    type: "image",
-    prompt: "Futuristic cyberpunk cityscape with neon lights, concept art",
-    model: "Stable Diffusion XL",
-    url: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=512&h=512&fit=crop",
-    status: "completed",
-    cost: 2,
-  });
 };
 
 // Initialize the database with demo data
