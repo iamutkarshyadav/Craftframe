@@ -24,12 +24,12 @@ export interface GenerationResult {
   error?: string;
 }
 
-// Image Generation using Flux model
+// Image Generation using FLUX.1-dev model (best quality)
 export async function generateImage(prompt: string): Promise<GenerationResult> {
   const generationId = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   try {
-    if (HF_TOKEN === "demo-key") {
+    if (!HF_TOKEN || HF_TOKEN === "demo-key") {
       // Demo mode - return placeholder
       console.log("Demo mode: Using placeholder image for prompt:", prompt);
 
