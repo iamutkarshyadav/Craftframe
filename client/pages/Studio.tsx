@@ -221,6 +221,13 @@ export default function Studio() {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => (window.location.href = "/dashboard")}
+                  >
+                    Dashboard
+                  </Button>
                   <div className="flex items-center space-x-2 text-sm">
                     <Zap className="w-4 h-4 text-yellow-500" />
                     <span>{user?.credits || 0} credits</span>
