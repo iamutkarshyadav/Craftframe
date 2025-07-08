@@ -71,18 +71,23 @@ export const handleLogin: RequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("Login attempt:", { email, password: "***" });
+
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
 
     // Find user
     const user = findUserByEmail(email);
+    console.log("User found:", user ? "Yes" : "No");
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // Check password
+    console.log("Checking password hash comparison...");
     const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log("Password valid:", isValidPassword);
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
