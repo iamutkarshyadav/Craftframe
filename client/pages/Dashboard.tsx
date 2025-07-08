@@ -133,14 +133,17 @@ export default function Dashboard() {
     try {
       const formData = type === "image" ? imageForm : videoForm;
 
-      const response = await fetch("/api/generate", {
+      // Use new Hugging Face specific endpoints
+      const endpoint =
+        type === "image" ? "/api/generate/image" : "/api/generate/video";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("aicreate-token")}`,
         },
         body: JSON.stringify({
-          type,
           prompt: formData.prompt,
           model: formData.model,
           ...(type === "image" && {
@@ -160,8 +163,8 @@ export default function Dashboard() {
         throw new Error(data.message || "Generation failed");
       }
 
-      // Start polling for generation status
-      pollGenerationStatus(data.id);
+      // Start polling for generation status using new endpoints
+      pollGenerationStatus(data.id, type);
       fetchGenerations(); // Refresh the list
     } catch (err: any) {
       setError(err.message || "Generation failed. Please try again.");
