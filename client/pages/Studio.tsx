@@ -30,18 +30,10 @@ import {
   Sparkles,
   Image as ImageIcon,
   Video as VideoIcon,
-  Download,
-  Loader2,
   User,
   Zap,
   LogOut,
-  Copy,
-  Heart,
-  Share2,
   Settings,
-  Palette,
-  Camera,
-  Film,
   Wand2,
   Gauge,
   Clock,
@@ -49,16 +41,21 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  Loader2,
   RefreshCw,
   ExternalLink,
   Monitor,
   Smartphone,
   Square,
   Maximize,
+  Camera,
+  Palette,
+  Brush,
+  PenTool,
+  Globe,
+  Cpu,
   Layers,
-  Grid3X3,
-  Eye,
-  EyeOff,
+  Film,
 } from "lucide-react";
 
 interface Generation {
@@ -70,41 +67,120 @@ interface Generation {
   createdAt: string;
   settings?: any;
   progress?: number;
+  metadata?: any;
 }
 
 const imageModels = [
   {
-    id: "flux",
+    id: "flux-pro",
     name: "FLUX Pro",
-    description: "Highest quality, photorealistic",
-    credits: 2,
+    description: "Highest quality, photorealistic images",
+    credits: 3,
+    quality: "Ultra HD",
   },
   {
-    id: "sdxl",
-    name: "Stable Diffusion XL",
+    id: "flux-dev",
+    name: "FLUX Dev",
     description: "Balanced quality and speed",
-    credits: 1,
+    credits: 2,
+    quality: "High Quality",
   },
   {
-    id: "turbo",
-    name: "SDXL Turbo",
+    id: "flux-schnell",
+    name: "FLUX Schnell",
     description: "Lightning fast generation",
     credits: 1,
+    quality: "Standard",
   },
 ];
 
 const videoModels = [
   {
-    id: "svd",
-    name: "Stable Video Diffusion",
-    description: "High-quality video generation",
-    credits: 5,
+    id: "pika",
+    name: "Pika Labs",
+    description: "Cinematic quality video generation",
+    credits: 8,
+    quality: "Cinema Grade",
+  },
+  {
+    id: "luma",
+    name: "Luma Dream Machine",
+    description: "High-quality realistic videos",
+    credits: 6,
+    quality: "Professional",
+  },
+  {
+    id: "runway",
+    name: "Runway Gen-3",
+    description: "Advanced video AI model",
+    credits: 10,
+    quality: "Premium",
   },
   {
     id: "demo",
     name: "Demo Video",
     description: "Preview mode (free)",
     credits: 0,
+    quality: "Preview",
+  },
+];
+
+const imageCategories = [
+  {
+    id: "photorealistic",
+    name: "Photorealistic",
+    description: "Ultra-realistic photographs",
+    icon: Camera,
+    examples: ["Portrait", "Landscape", "Product shots"],
+  },
+  {
+    id: "anime",
+    name: "Anime/Manga",
+    description: "Japanese animation style",
+    icon: Sparkles,
+    examples: ["Characters", "Scenes", "Fan art"],
+  },
+  {
+    id: "painting",
+    name: "Digital Painting",
+    description: "Artistic painted style",
+    icon: Brush,
+    examples: ["Oil painting", "Watercolor", "Acrylic"],
+  },
+  {
+    id: "sketch",
+    name: "Sketch/Drawing",
+    description: "Hand-drawn line art",
+    icon: PenTool,
+    examples: ["Pencil sketch", "Ink drawing", "Line art"],
+  },
+  {
+    id: "realistic",
+    name: "Real Life",
+    description: "Everyday realistic scenes",
+    icon: Globe,
+    examples: ["Street scenes", "Interior", "Nature"],
+  },
+  {
+    id: "3d-render",
+    name: "3D Render",
+    description: "3D modeled artwork",
+    icon: Cpu,
+    examples: ["CGI", "Architecture", "Product viz"],
+  },
+  {
+    id: "abstract",
+    name: "Abstract Art",
+    description: "Non-representational art",
+    icon: Layers,
+    examples: ["Geometric", "Color study", "Modern art"],
+  },
+  {
+    id: "fantasy",
+    name: "Fantasy Art",
+    description: "Magical and fantastical",
+    icon: Wand2,
+    examples: ["Dragons", "Magic", "Mythical"],
   },
 ];
 
@@ -113,21 +189,6 @@ const imageSizes = [
   { id: "1344x768", name: "Landscape", aspect: "16:9", icon: Monitor },
   { id: "768x1344", name: "Portrait", aspect: "9:16", icon: Smartphone },
   { id: "1536x1024", name: "Wide", aspect: "3:2", icon: Maximize },
-];
-
-const stylePresets = [
-  "Photorealistic",
-  "Digital Art",
-  "Oil Painting",
-  "Watercolor",
-  "Sketch",
-  "3D Render",
-  "Anime",
-  "Cartoon",
-  "Cinematic",
-  "Fantasy",
-  "Sci-Fi",
-  "Minimalist",
 ];
 
 const promptTemplates = {
@@ -150,18 +211,19 @@ export default function Studio() {
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generations, setGenerations] = useState<Generation[]>([]);
+  const [currentCanvasIndex, setCurrentCanvasIndex] = useState(0);
   const [error, setError] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Image settings
-  const [imageModel, setImageModel] = useState("flux");
+  const [imageModel, setImageModel] = useState("flux-dev");
   const [imageSize, setImageSize] = useState("1024x1024");
-  const [imageStyle, setImageStyle] = useState("");
+  const [imageCategory, setImageCategory] = useState("photorealistic");
   const [imageSteps, setImageSteps] = useState([20]);
   const [imageCfgScale, setImageCfgScale] = useState([7]);
 
   // Video settings
-  const [videoModel, setVideoModel] = useState("svd");
+  const [videoModel, setVideoModel] = useState("pika");
   const [videoDuration, setVideoDuration] = useState("3");
   const [videoFps, setVideoFps] = useState([24]);
 
@@ -232,7 +294,7 @@ export default function Studio() {
         ...(activeTab === "image"
           ? {
               size: imageSize,
-              style: imageStyle,
+              category: imageCategory,
               steps: imageSteps[0],
               cfg_scale: imageCfgScale[0],
             }
@@ -267,9 +329,11 @@ export default function Studio() {
         createdAt: new Date().toISOString(),
         settings: requestBody,
         progress: 0,
+        metadata: data.metadata,
       };
 
       setGenerations((prev) => [newGeneration, ...prev]);
+      setCurrentCanvasIndex(0); // Show the new generation
 
       // Poll for completion if we have an ID
       if (data.id) {
@@ -328,6 +392,7 @@ export default function Studio() {
                     progress:
                       data.progress ||
                       (data.status === "completed" ? 100 : gen.progress),
+                    metadata: { ...gen.metadata, ...data.metadata },
                   }
                 : gen,
             ),
@@ -354,14 +419,6 @@ export default function Studio() {
     };
 
     poll();
-  };
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: "Copied",
-      description: "Prompt copied to clipboard",
-    });
   };
 
   const handleDownload = async (generation: Generation) => {
@@ -392,27 +449,35 @@ export default function Studio() {
     }
   };
 
-  const insertTemplate = (template: string) => {
-    setPrompt(template);
+  const handleShare = (generation: Generation, platform: string) => {
+    toast({
+      title: "Shared Successfully",
+      description: `Image shared to ${platform}`,
+    });
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "generating":
-        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
-      case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
+  const handleLike = (generation: Generation) => {
+    toast({
+      title: "Liked",
+      description: "Added to your favorites",
+    });
+  };
+
+  const insertTemplate = (template: string) => {
+    setPrompt(template);
   };
 
   const selectedModel =
     activeTab === "image"
       ? imageModels.find((m) => m.id === imageModel)
       : videoModels.find((m) => m.id === videoModel);
+
+  const selectedCategory = imageCategories.find((c) => c.id === imageCategory);
+
+  // Filter generations for canvas
+  const imageGenerations = generations.filter(
+    (g) => g.type === "image" && g.status === "completed" && g.url,
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -479,49 +544,22 @@ export default function Studio() {
       </header>
 
       <div className="container mx-auto px-4 lg:px-6 py-8 max-w-7xl">
-        <div className="grid grid-cols-1 gap-8">
-          {/* Main Canvas */}
-          <div className="order-2 lg:order-1">
+        <div className="space-y-8">
+          {/* Canvas Section */}
+          <section>
             <ImageCanvas
-              imageUrl={
-                generations.find(
-                  (g) => g.type === "image" && g.status === "completed",
-                )?.url
-              }
-              prompt={
-                generations.find(
-                  (g) => g.type === "image" && g.status === "completed",
-                )?.prompt
-              }
+              generations={imageGenerations}
+              currentIndex={currentCanvasIndex}
               isLoading={isGenerating && activeTab === "image"}
-              metadata={
-                generations.find(
-                  (g) => g.type === "image" && g.status === "completed",
-                )?.settings
-              }
-              onDownload={() => {
-                const latestImage = generations.find(
-                  (g) => g.type === "image" && g.status === "completed",
-                );
-                if (latestImage) handleDownload(latestImage);
-              }}
-              onShare={() => {
-                toast({
-                  title: "Share Feature",
-                  description: "Share functionality coming soon!",
-                });
-              }}
-              onLike={() => {
-                toast({
-                  title: "Like Feature",
-                  description: "Like functionality coming soon!",
-                });
-              }}
+              onIndexChange={setCurrentCanvasIndex}
+              onDownload={handleDownload}
+              onShare={handleShare}
+              onLike={handleLike}
             />
-          </div>
+          </section>
 
-          {/* Generation Panel */}
-          <div className="order-1 lg:order-2 max-w-2xl mx-auto w-full space-y-6">
+          {/* Generation Controls */}
+          <section>
             <Card className="border-2">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -568,92 +606,122 @@ export default function Studio() {
                     </TabsTrigger>
                   </TabsList>
 
-                  {/* Prompt Input */}
-                  <div className="space-y-4 mt-6">
-                    <Label htmlFor="prompt" className="text-base font-semibold">
-                      Describe what you want to create
-                    </Label>
+                  {/* Image Generation */}
+                  <TabsContent value="image" className="space-y-6 mt-6">
+                    {/* Category Selection */}
+                    <div className="space-y-4">
+                      <Label className="text-base font-semibold">
+                        Choose Art Style
+                      </Label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {imageCategories.map((category) => (
+                          <Button
+                            key={category.id}
+                            variant={
+                              imageCategory === category.id
+                                ? "default"
+                                : "outline"
+                            }
+                            className={`h-auto p-3 flex flex-col items-center gap-2 ${
+                              imageCategory === category.id
+                                ? "bg-gradient-to-r from-purple-600 to-blue-600"
+                                : ""
+                            }`}
+                            onClick={() => setImageCategory(category.id)}
+                          >
+                            <category.icon className="h-5 w-5" />
+                            <span className="text-xs font-medium">
+                              {category.name}
+                            </span>
+                          </Button>
+                        ))}
+                      </div>
+                      {selectedCategory && (
+                        <div className="p-3 bg-muted/50 rounded-lg">
+                          <p className="text-sm text-muted-foreground mb-1">
+                            {selectedCategory.description}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Examples: {selectedCategory.examples.join(", ")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Template Suggestions */}
-                    <div className="flex flex-wrap gap-2">
-                      {promptTemplates[activeTab].map((template, index) => (
+                    {/* Prompt Input */}
+                    <div className="space-y-4">
+                      <Label
+                        htmlFor="prompt"
+                        className="text-base font-semibold"
+                      >
+                        Describe what you want to create
+                      </Label>
+
+                      <Textarea
+                        id="prompt"
+                        placeholder={`Create a ${selectedCategory?.name.toLowerCase()} image of...`}
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        className="min-h-[120px] text-base resize-none"
+                        maxLength={1000}
+                      />
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>{prompt.length}/1000 characters</span>
                         <Button
-                          key={index}
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          onClick={() => insertTemplate(template)}
-                          className="text-xs h-8"
+                          onClick={() => setPrompt("")}
+                          disabled={!prompt}
                         >
-                          Template {index + 1}
+                          Clear
                         </Button>
-                      ))}
+                      </div>
                     </div>
 
-                    <Textarea
-                      id="prompt"
-                      placeholder={
-                        activeTab === "image"
-                          ? "A beautiful sunset over a mountain range, dramatic clouds, golden hour lighting, photorealistic, highly detailed..."
-                          : "Smooth camera movement through a serene forest, gentle wind in the trees, cinematic lighting, peaceful atmosphere..."
-                      }
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      className="min-h-[120px] text-base resize-none"
-                      maxLength={1000}
-                    />
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>{prompt.length}/1000 characters</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setPrompt("")}
-                        disabled={!prompt}
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Model and Basic Settings */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium">AI Model</Label>
-                      <Select
-                        value={activeTab === "image" ? imageModel : videoModel}
-                        onValueChange={
-                          activeTab === "image" ? setImageModel : setVideoModel
-                        }
-                      >
-                        <SelectTrigger className="h-11">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(activeTab === "image"
-                            ? imageModels
-                            : videoModels
-                          ).map((model) => (
-                            <SelectItem key={model.id} value={model.id}>
-                              <div className="flex items-center justify-between w-full">
-                                <div>
-                                  <div className="font-medium">
-                                    {model.name}
+                    {/* Model and Settings */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">AI Model</Label>
+                        <Select
+                          value={imageModel}
+                          onValueChange={setImageModel}
+                        >
+                          <SelectTrigger className="h-11">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {imageModels.map((model) => (
+                              <SelectItem key={model.id} value={model.id}>
+                                <div className="flex items-center justify-between w-full">
+                                  <div>
+                                    <div className="font-medium">
+                                      {model.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {model.description}
+                                    </div>
                                   </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {model.description}
+                                  <div className="flex gap-1 ml-2">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {model.credits} credits
+                                    </Badge>
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {model.quality}
+                                    </Badge>
                                   </div>
                                 </div>
-                                <Badge variant="secondary" className="ml-2">
-                                  {model.credits}{" "}
-                                  {model.credits === 1 ? "credit" : "credits"}
-                                </Badge>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {activeTab === "image" && (
                       <div>
                         <Label className="text-sm font-medium">
                           Size & Aspect Ratio
@@ -676,9 +744,126 @@ export default function Studio() {
                           </SelectContent>
                         </Select>
                       </div>
-                    )}
+                    </div>
 
-                    {activeTab === "video" && (
+                    {/* Advanced Settings */}
+                    {showAdvanced && (
+                      <div className="space-y-6 p-4 border rounded-lg bg-muted/30">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <Label className="text-sm font-medium mb-2 block">
+                              Steps: {imageSteps[0]}
+                            </Label>
+                            <Slider
+                              value={imageSteps}
+                              onValueChange={setImageSteps}
+                              max={50}
+                              min={10}
+                              step={5}
+                              className="w-full"
+                            />
+                            <div className="text-xs text-muted-foreground mt-1">
+                              More steps = higher quality, slower generation
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium mb-2 block">
+                              CFG Scale: {imageCfgScale[0]}
+                            </Label>
+                            <Slider
+                              value={imageCfgScale}
+                              onValueChange={setImageCfgScale}
+                              max={20}
+                              min={1}
+                              step={0.5}
+                              className="w-full"
+                            />
+                            <div className="text-xs text-muted-foreground mt-1">
+                              How closely to follow the prompt
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Video Generation */}
+                  <TabsContent value="video" className="space-y-6 mt-6">
+                    {/* Prompt Input */}
+                    <div className="space-y-4">
+                      <Label
+                        htmlFor="video-prompt"
+                        className="text-base font-semibold"
+                      >
+                        Describe your video concept
+                      </Label>
+
+                      <Textarea
+                        id="video-prompt"
+                        placeholder="A cinematic shot of..."
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        className="min-h-[120px] text-base resize-none"
+                        maxLength={1000}
+                      />
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>{prompt.length}/1000 characters</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setPrompt("")}
+                          disabled={!prompt}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Video Model and Settings */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">AI Model</Label>
+                        <Select
+                          value={videoModel}
+                          onValueChange={setVideoModel}
+                        >
+                          <SelectTrigger className="h-11">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {videoModels.map((model) => (
+                              <SelectItem key={model.id} value={model.id}>
+                                <div className="flex items-center justify-between w-full">
+                                  <div>
+                                    <div className="font-medium">
+                                      {model.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {model.description}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-1 ml-2">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {model.credits} credits
+                                    </Badge>
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {model.quality}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       <div>
                         <Label className="text-sm font-medium">Duration</Label>
                         <Select
@@ -695,94 +880,11 @@ export default function Studio() {
                           </SelectContent>
                         </Select>
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Advanced Settings Toggle */}
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowAdvanced(!showAdvanced)}
-                      className="p-0 h-auto font-medium"
-                    >
-                      {showAdvanced ? (
-                        <EyeOff className="mr-2 h-4 w-4" />
-                      ) : (
-                        <Eye className="mr-2 h-4 w-4" />
-                      )}
-                      {showAdvanced ? "Hide" : "Show"} Advanced Settings
-                    </Button>
-                  </div>
-
-                  {/* Advanced Settings */}
-                  {showAdvanced && (
-                    <div className="space-y-6 p-4 border rounded-lg bg-muted/30">
-                      {activeTab === "image" && (
-                        <>
-                          <div>
-                            <Label className="text-sm font-medium">
-                              Style Preset
-                            </Label>
-                            <Select
-                              value={imageStyle}
-                              onValueChange={setImageStyle}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a style (optional)" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {stylePresets.map((style) => (
-                                  <SelectItem
-                                    key={style}
-                                    value={style.toLowerCase()}
-                                  >
-                                    {style}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">
-                                Steps: {imageSteps[0]}
-                              </Label>
-                              <Slider
-                                value={imageSteps}
-                                onValueChange={setImageSteps}
-                                max={50}
-                                min={10}
-                                step={5}
-                                className="w-full"
-                              />
-                              <div className="text-xs text-muted-foreground mt-1">
-                                More steps = higher quality, slower generation
-                              </div>
-                            </div>
-
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">
-                                CFG Scale: {imageCfgScale[0]}
-                              </Label>
-                              <Slider
-                                value={imageCfgScale}
-                                onValueChange={setImageCfgScale}
-                                max={20}
-                                min={1}
-                                step={0.5}
-                                className="w-full"
-                              />
-                              <div className="text-xs text-muted-foreground mt-1">
-                                How closely to follow the prompt
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {activeTab === "video" && (
+                    {/* Video Advanced Settings */}
+                    {showAdvanced && (
+                      <div className="space-y-6 p-4 border rounded-lg bg-muted/30">
                         <div>
                           <Label className="text-sm font-medium mb-2 block">
                             Frame Rate: {videoFps[0]} FPS
@@ -799,9 +901,22 @@ export default function Studio() {
                             Higher FPS = smoother motion, more credits
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Advanced Settings Toggle */}
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                      className="p-0 h-auto font-medium"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      {showAdvanced ? "Hide" : "Show"} Advanced Settings
+                    </Button>
+                  </div>
 
                   {/* Error Display */}
                   {error && (
@@ -841,7 +956,7 @@ export default function Studio() {
                     ) : (
                       <span>
                         Cost: {selectedModel?.credits || 0} credit
-                        {(selectedModel?.credits || 0) !== 1 ? "s" : ""}• You
+                        {(selectedModel?.credits || 0) !== 1 ? "s" : ""} • You
                         have {user?.credits || 0} credits remaining
                       </span>
                     )}
@@ -849,29 +964,46 @@ export default function Studio() {
                 </Tabs>
               </CardContent>
             </Card>
-          </div>
+          </section>
 
-          {/* Recent Generations Sidebar */}
+          {/* Recent Generations */}
           {isAuthenticated && generations.length > 0 && (
-            <div className="order-3">
+            <section>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Recent Generations</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">
+                      Recent Generations
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={loadRecentGenerations}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <CardDescription>Your latest AI creations</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    {generations.slice(0, 6).map((generation) => (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                    {generations.slice(0, 16).map((generation, index) => (
                       <div
                         key={generation.id}
-                        className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                        className={`aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer transition-all ${
+                          generation.type === "image" &&
+                          index === currentCanvasIndex
+                            ? "ring-2 ring-purple-500"
+                            : "hover:ring-2 hover:ring-purple-300"
+                        }`}
                         onClick={() => {
                           if (generation.type === "image" && generation.url) {
-                            // This would switch to showing this image in the canvas
-                            toast({
-                              title: "Image Selected",
-                              description: "Canvas switching coming soon!",
-                            });
+                            const imageIndex = imageGenerations.findIndex(
+                              (g) => g.id === generation.id,
+                            );
+                            if (imageIndex !== -1) {
+                              setCurrentCanvasIndex(imageIndex);
+                            }
                           }
                         }}
                       >
@@ -883,11 +1015,9 @@ export default function Studio() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <video
-                              src={generation.url}
-                              className="w-full h-full object-cover"
-                              muted
-                            />
+                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                              <Film className="w-6 h-6 text-white" />
+                            </div>
                           )
                         ) : generation.status === "generating" ? (
                           <div className="w-full h-full flex items-center justify-center">
@@ -911,7 +1041,7 @@ export default function Studio() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </section>
           )}
         </div>
       </div>
