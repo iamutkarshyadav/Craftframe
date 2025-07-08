@@ -10,10 +10,10 @@ import {
 import {
   generateImage,
   generateVideo,
-  isReplicateConfigured,
+  isServiceConfigured,
   getDemoResult,
   GenerationRequest,
-} from "../lib/ai-service-v2";
+} from "../lib/ai-service-v3";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
 
