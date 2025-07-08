@@ -40,9 +40,9 @@ const authenticate: RequestHandler = (req, res, next) => {
 };
 
 // Generate content (image or video)
-export const handleGenerate: RequestHandler = [
+export const handleGenerate = [
   authenticate,
-  async (req, res) => {
+  async (req: any, res: any) => {
     try {
       const user = (req as any).user;
       const { type, prompt, model, style, width, height, quality, duration } =
