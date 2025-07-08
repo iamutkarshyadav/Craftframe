@@ -14,7 +14,7 @@ import {
   isServiceConfigured,
   getDemoResult,
   GenerationRequest,
-} from "../lib/ai-service-enhanced";
+} from "../lib/ai-service-production";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
 
@@ -88,9 +88,9 @@ export const handleImageGeneration = [
         prompt: prompt.trim(),
         model,
         size,
-        steps: req.body.steps,
-        cfg_scale: req.body.cfg_scale,
-        style: req.body.style,
+        category,
+        steps,
+        cfg_scale,
       };
 
       // Generate image with Pollinations
