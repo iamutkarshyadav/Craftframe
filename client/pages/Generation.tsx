@@ -268,12 +268,120 @@ export default function Generation() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Handle demo login
+  const handleDemoLogin = async () => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "demo@aicreate.app",
+          password: "demo123",
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("aicreate-token", data.token);
+        window.location.reload(); // Refresh to update auth state
+      }
+    } catch (error) {
+      console.error("Demo login failed:", error);
+    }
+  };
+
   // Show auth modal automatically for unauthenticated users
   useEffect(() => {
     if (!isAuthenticated) {
       setAuthModalOpen(true);
     }
   }, [isAuthenticated]);
+
+  // Show welcome screen for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="border-b border-border bg-background">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-center w-8 h-8 bg-gradient-ai rounded">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-bold text-gradient">
+                  AICreate
+                </span>
+                <Separator orientation="vertical" className="h-6" />
+                <span className="text-sm text-muted-foreground">Studio</span>
+              </div>
+              <Button onClick={() => setAuthModalOpen(true)}>Sign In</Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Welcome Content */}
+        <div className="flex items-center justify-center min-h-[calc(100vh-73px)] p-4">
+          <Card className="w-full max-w-2xl">
+            <CardHeader className="text-center">
+              <div className="w-16 h-16 bg-gradient-ai rounded-full flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-3xl mb-2">
+                Welcome to AICreate Studio
+              </CardTitle>
+              <CardDescription className="text-lg">
+                Create stunning AI-generated images and videos with
+                state-of-the-art models
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-semibold mb-2">🎨 Image Generation</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Create stunning images using FLUX.1-dev model
+                  </p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-semibold mb-2">🎥 Video Generation</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Generate dynamic videos from text descriptions
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  className="w-full bg-gradient-ai hover:opacity-90 text-lg py-6"
+                  onClick={handleDemoLogin}
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Try Demo (No signup required)
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setAuthModalOpen(true)}
+                >
+                  Create Account / Sign In
+                </Button>
+              </div>
+
+              <div className="text-center text-sm text-muted-foreground">
+                Demo account includes 1000 credits to test all features
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Auth Modal */}
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
