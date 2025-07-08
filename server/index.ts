@@ -6,6 +6,7 @@ import {
   handleLogin,
   handleMe,
   handleLogout,
+  handleCreateDemoUser,
 } from "./routes/auth";
 import {
   handleGenerate,
