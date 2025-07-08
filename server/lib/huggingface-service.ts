@@ -142,19 +142,29 @@ export async function generateVideo(prompt: string): Promise<GenerationResult> {
     );
 
     // Real Hugging Face API call using Wan2.1-T2V-14B model
-    const video = await client.textToVideo({
+    const result = await client.textToVideo({
       provider: "novita",
       model: "Wan-AI/Wan2.1-T2V-14B",
       inputs: prompt,
     });
 
-    if (!video || !video.video) {
-      throw new Error("Video generation failed");
+    // Handle the result which could be a Blob or URL
+    let videoUrl = "";
+    if (result instanceof Blob) {
+      videoUrl = URL.createObjectURL(result);
+    } else if (typeof result === "string") {
+      videoUrl = result;
+    } else if (result && typeof result === "object" && "url" in result) {
+      videoUrl = (result as any).url;
+    }
+
+    if (!videoUrl) {
+      throw new Error("Video generation failed - no URL returned");
     }
 
     return {
       id: generationId,
-      url: video.video, // Direct link to .mp4 or stream
+      url: videoUrl,
       status: "completed",
       progress: 100,
     };
