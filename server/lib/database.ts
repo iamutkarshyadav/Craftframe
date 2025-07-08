@@ -144,26 +144,10 @@ export const deleteSession = (token: string): boolean => {
 
 // Initialize with some demo data
 export const initializeDatabase = () => {
-  // Clear existing demo user if it exists (to reset password)
-  const existingDemoUser = findUserByEmail("demo@aicreate.app");
-  if (existingDemoUser) {
-    console.log(
-      "Removing existing demo user to recreate with correct password",
-    );
-    users.delete(existingDemoUser.id);
-  }
-
-  console.log("Creating demo user with password 'demo123'");
-
-  // Demo user with more credits
-  // Using a hash that matches "demo123" - this is generated with bcrypt.hash("demo123", 10)
-  const demoUser = createUser({
-    email: "demo@aicreate.app",
-    name: "Demo User",
-    password: "$2a$10$7YwVKWYW5bOTnZo3JfHxT.6JyF8lFWW0MZPnASlJmg9J7MH1OKwSa", // "demo123"
-    plan: "pro",
-    credits: 1000,
-  });
+  // Skip creating demo user here - it will be created via API call
+  console.log(
+    "Database initialized. Use /api/auth/create-demo to create demo user.",
+  );
 
   // Demo generations
   createGeneration({
