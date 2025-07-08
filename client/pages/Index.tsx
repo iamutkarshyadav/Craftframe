@@ -66,17 +66,19 @@ export default function Index() {
               >
                 Showcase
               </a>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => (window.location.href = "/generate")}
+                className="text-sm"
+              >
+                Studio
+              </Button>
               <a
                 href="#pricing"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Pricing
-              </a>
-              <a
-                href="#testimonials"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Testimonials
               </a>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
