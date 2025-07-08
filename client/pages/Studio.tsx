@@ -24,6 +24,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { ImageCanvas } from "@/components/ui/image-canvas";
 import { toast } from "@/hooks/use-toast";
 import {
   Sparkles,
@@ -478,9 +479,49 @@ export default function Studio() {
       </header>
 
       <div className="container mx-auto px-4 lg:px-6 py-8 max-w-7xl">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8">
+          {/* Main Canvas */}
+          <div className="order-2 lg:order-1">
+            <ImageCanvas
+              imageUrl={
+                generations.find(
+                  (g) => g.type === "image" && g.status === "completed",
+                )?.url
+              }
+              prompt={
+                generations.find(
+                  (g) => g.type === "image" && g.status === "completed",
+                )?.prompt
+              }
+              isLoading={isGenerating && activeTab === "image"}
+              metadata={
+                generations.find(
+                  (g) => g.type === "image" && g.status === "completed",
+                )?.settings
+              }
+              onDownload={() => {
+                const latestImage = generations.find(
+                  (g) => g.type === "image" && g.status === "completed",
+                );
+                if (latestImage) handleDownload(latestImage);
+              }}
+              onShare={() => {
+                toast({
+                  title: "Share Feature",
+                  description: "Share functionality coming soon!",
+                });
+              }}
+              onLike={() => {
+                toast({
+                  title: "Like Feature",
+                  description: "Like functionality coming soon!",
+                });
+              }}
+            />
+          </div>
+
           {/* Generation Panel */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="order-1 lg:order-2 max-w-2xl mx-auto w-full space-y-6">
             <Card className="border-2">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -810,204 +851,57 @@ export default function Studio() {
             </Card>
           </div>
 
-          {/* Results Panel */}
-          <div className="xl:col-span-1">
-            <Card className="border-2 sticky top-24">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Your Creations</CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={loadRecentGenerations}
-                    disabled={!isAuthenticated}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-                <CardDescription>
-                  {generations.length} generation
-                  {generations.length !== 1 ? "s" : ""} in this session
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                  {!isAuthenticated ? (
-                    <div className="text-center py-8">
-                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                        <User className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <h3 className="font-semibold mb-2">
-                        Sign in to see your creations
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Create an account to save and track your AI generations
-                      </p>
-                      <Button
-                        onClick={() => setAuthModalOpen(true)}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600"
-                      >
-                        Sign In
-                      </Button>
-                    </div>
-                  ) : generations.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Sparkles className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <h3 className="font-semibold mb-2">No creations yet</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Enter a prompt above and generate your first AI
-                        creation!
-                      </p>
-                    </div>
-                  ) : (
-                    generations.map((generation) => (
-                      <Card
+          {/* Recent Generations Sidebar */}
+          {isAuthenticated && generations.length > 0 && (
+            <div className="order-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Generations</CardTitle>
+                  <CardDescription>Your latest AI creations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {generations.slice(0, 6).map((generation) => (
+                      <div
                         key={generation.id}
-                        className="overflow-hidden group hover:shadow-md transition-all"
+                        className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                        onClick={() => {
+                          if (generation.type === "image" && generation.url) {
+                            // This would switch to showing this image in the canvas
+                            toast({
+                              title: "Image Selected",
+                              description: "Canvas switching coming soon!",
+                            });
+                          }
+                        }}
                       >
-                        <div className="relative">
-                          {generation.status === "generating" ? (
-                            <div className="aspect-video bg-muted flex items-center justify-center">
-                              <div className="text-center">
-                                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600" />
-                                <p className="text-sm font-medium">
-                                  Generating {generation.type}...
-                                </p>
-                                {generation.progress && (
-                                  <div className="w-24 h-1 bg-muted-foreground/20 rounded-full mx-auto mt-2">
-                                    <div
-                                      className="h-full bg-purple-600 rounded-full transition-all duration-500"
-                                      style={{
-                                        width: `${generation.progress}%`,
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ) : generation.status === "completed" &&
-                            generation.url ? (
-                            generation.type === "image" ? (
-                              <img
-                                src={generation.url}
-                                alt={generation.prompt}
-                                className="w-full aspect-video object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = "none";
-                                  e.currentTarget.parentElement?.insertAdjacentHTML(
-                                    "beforeend",
-                                    `<div class="w-full aspect-video bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                                      <p class="text-red-600 text-sm">Failed to load image</p>
-                                    </div>`,
-                                  );
-                                }}
-                              />
-                            ) : (
-                              <video
-                                src={generation.url}
-                                className="w-full aspect-video object-cover"
-                                controls
-                                muted
-                                loop
-                                preload="metadata"
-                              />
-                            )
+                        {generation.status === "completed" && generation.url ? (
+                          generation.type === "image" ? (
+                            <img
+                              src={generation.url}
+                              alt={generation.prompt}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
-                            <div className="aspect-video bg-red-500/10 flex items-center justify-center">
-                              <div className="text-center">
-                                <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                                <p className="text-sm text-red-600">
-                                  Generation failed
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Overlay Actions */}
-                          {generation.status === "completed" &&
-                            generation.url && (
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    onClick={() => handleDownload(generation)}
-                                    className="bg-white/90 hover:bg-white"
-                                  >
-                                    <Download className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    onClick={() =>
-                                      handleCopy(generation.prompt)
-                                    }
-                                    className="bg-white/90 hover:bg-white"
-                                  >
-                                    <Copy className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    className="bg-white/90 hover:bg-white"
-                                  >
-                                    <Share2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-
-                          {/* Status Badge */}
-                          <div className="absolute top-2 right-2">
-                            <Badge
-                              variant="secondary"
-                              className="bg-black/80 text-white border-0"
-                            >
-                              <div className="flex items-center gap-1">
-                                {getStatusIcon(generation.status)}
-                                <span className="capitalize text-xs">
-                                  {generation.status}
-                                </span>
-                              </div>
-                            </Badge>
+                            <video
+                              src={generation.url}
+                              className="w-full h-full object-cover"
+                              muted
+                            />
+                          )
+                        ) : generation.status === "generating" ? (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
                           </div>
-                        </div>
-
-                        <CardContent className="p-3">
-                          <p className="text-sm line-clamp-2 mb-2 font-medium">
-                            {generation.prompt}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              {generation.type === "image" ? (
-                                <ImageIcon className="w-3 h-3" />
-                              ) : (
-                                <VideoIcon className="w-3 h-3" />
-                              )}
-                              <span className="capitalize">
-                                {generation.type}
-                              </span>
-                            </div>
-                            <span>
-                              {new Date(
-                                generation.createdAt,
-                              ).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-red-100 dark:bg-red-900/20">
+                            <XCircle className="w-6 h-6 text-red-500" />
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  )}
-                </div>
-
-                {isAuthenticated && generations.length > 0 && (
-                  <div className="mt-4 pt-4 border-t">
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4">
                     <Link to="/dashboard">
                       <Button variant="outline" size="sm" className="w-full">
                         <ExternalLink className="mr-2 h-4 w-4" />
@@ -1015,10 +909,10 @@ export default function Studio() {
                       </Button>
                     </Link>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
 
