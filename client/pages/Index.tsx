@@ -88,17 +88,10 @@ export default function Index() {
                   </span>
                   <Button
                     size="sm"
-                    variant="outline"
-                    onClick={() => (window.location.href = "/dashboard")}
-                  >
-                    Dashboard
-                  </Button>
-                  <Button
-                    size="sm"
                     className="bg-gradient-ai hover:opacity-90"
                     onClick={() => (window.location.href = "/generate")}
                   >
-                    Create
+                    Open Studio
                   </Button>
                 </div>
               ) : (
