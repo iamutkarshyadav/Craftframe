@@ -91,6 +91,7 @@ export default function Index() {
             <Button
               size="lg"
               className="bg-gradient-ai hover:opacity-90 px-8 py-6 text-lg"
+              onClick={() => (window.location.href = "/dashboard")}
             >
               Start Creating Free <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
