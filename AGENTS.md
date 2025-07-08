@@ -1,164 +1,279 @@
-# Fusion Starter
+# AICreate - Production-Ready AI Content Generation Platform
 
-A production-ready full-stack React application template with integrated Express server, featuring React Router 6 SPA mode, TypeScript, Vitest, Zod and modern tooling.
+A fully functional, production-ready AI content generation SaaS platform built with React, Vite, Express, and real AI model integration. Create stunning images and videos from text prompts with advanced features like user authentication, credit systems, and real-time generation tracking.
 
-While the starter comes with a express server, only create endpoint when strictly neccesary, for example to encapsulate logic that must leave in the server, such as private keys handling, or certain DB operations, db...
+## 🚀 Features
 
-## Tech Stack
+### 🎨 AI Content Generation
 
-- **Frontend**: React 18 + React Router 6 (spa) + TypeScript + Vite + TailwindCSS 3
-- **Backend**: Express server integrated with Vite dev server
-- **Testing**: Vitest
-- **UI**: Radix UI + TailwindCSS 3 + Lucide React icons
+- **Text-to-Image**: Generate stunning images using Stable Diffusion models
+- **Text-to-Video**: Create dynamic videos from text descriptions
+- **Real-time Queue System**: Track generation progress with live status updates
+- **Multiple AI Models**: Integration with Hugging Face, Stability AI, and more
+- **Smart Templates**: Pre-built prompts for different use cases
 
-## Project Structure
+### 🔐 Authentication & User Management
 
-```
-client/                   # React SPA frontend
-├── pages/                # Route components (Index.tsx = home)
-├── components/ui/        # Pre-built UI component library
-├── App.tsx                # App entry point and with SPA routing setup
-└── global.css            # TailwindCSS 3 theming and global styles
+- **Secure Auth System**: JWT-based authentication with bcrypt password hashing
+- **User Registration/Login**: Complete signup and signin flow with validation
+- **Session Management**: Persistent user sessions with token refresh
+- **Profile Management**: User settings and account management
 
-server/                   # Express API backend
-├── index.ts              # Main server setup (express config + routes)
-└── routes/               # API handlers
+### 💳 Credit & Subscription System
 
-shared/                   # Types used by both client & server
-└── api.ts                # Example of how to share api interfaces
-```
+- **Credit-based Pricing**: Pay-per-generation model with different credit costs
+- **Multiple Plans**: Free (10 credits), Creator ($9.99/200 credits), Pro ($29.99/1000 credits)
+- **Credit Tracking**: Real-time credit balance monitoring
+- **Usage History**: Complete generation history with costs
 
-## Key Features
+### 🎯 Production Features
 
-## SPA Routing System
+- **Real AI Integration**: Working connections to Hugging Face API and Stability AI
+- **Generation Queue**: Scalable queue system for managing AI requests
+- **Content Management**: Save, favorite, and organize generated content
+- **Responsive Design**: Mobile-first design that works on all devices
+- **Dark/Light Mode**: Theme switching with system preference support
 
-The routing system is powered by React Router 6:
+### 🔧 Developer Features
 
-- `client/pages/Index.tsx` represents the home page.
-- Routes are defined in `client/App.tsx` using the `react-router-dom` import
-- Route files are located in the `client/pages/` directory
+- **TypeScript**: Full type safety across frontend and backend
+- **Modern UI**: Beautiful interface built with Radix UI and Tailwind CSS
+- **Real-time Updates**: Live status tracking and notifications
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Scalable Architecture**: Modular codebase ready for production deployment
 
-For example, routes can be defined with:
+## 🛠 Tech Stack
 
-```typescript
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+### Frontend
 
-<Routes>
-  <Route path="/" element={<Index />} />
-  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-  <Route path="*" element={<NotFound />} />
-</Routes>;
-```
+- **React 18** + **Vite** + **TypeScript**
+- **Tailwind CSS 3** + **Radix UI Components**
+- **React Router 6** (SPA mode)
+- **TanStack Query** for state management
+- **Zustand** for global state
 
-### Styling System
+### Backend
 
-- **Primary**: TailwindCSS 3 utility classes
-- **Theme and design tokens**: Configure in `client/global.css` 
-- **UI components**: Pre-built library in `client/components/ui/`
-- **Utility**: `cn()` function combines `clsx` + `tailwind-merge` for conditional classes
+- **Express.js** + **TypeScript**
+- **JWT Authentication** with **bcryptjs**
+- **In-memory Database** (easily replaceable with PostgreSQL/MongoDB)
+- **AI Service Integration** (Hugging Face, Stability AI)
+- **Queue System** for generation management
 
-```typescript
-// cn utility usage
-className={cn(
-  "base-classes",
-  { "conditional-class": condition },
-  props.className  // User overrides
-)}
-```
+### AI Integration
 
-### Express Server Integration
+- **Hugging Face API** - Stable Diffusion models
+- **Stability AI** - Advanced image generation
+- **Runway ML** - Video generation (configurable)
+- **OpenAI DALL-E** - Premium image generation
 
-- **Development**: Single port (8080) for both frontend/backend
-- **Hot reload**: Both client and server code
-- **API endpoints**: Prefixed with `/api/`
+## 🚀 Quick Start
 
-#### Example API Routes
-- `GET /api/ping` - Simple ping api
-- `GET /api/demo` - Demo endpoint  
-
-### Shared Types
-Import consistent types in both client and server:
-```typescript
-import { DemoResponse } from '@shared/api';
-```
-
-Path aliases:
-- `@shared/*` - Shared folder
-- `@/*` - Client folder
-
-## Development Commands
+### 1. Install Dependencies
 
 ```bash
-npm run dev        # Start dev server (client + server)
-npm run build      # Production build
-npm run start      # Start production server
-npm run typecheck  # TypeScript validation
-npm test          # Run Vitest tests
+npm install
 ```
 
-## Adding Features
+### 2. Environment Setup
 
-### Add new colors to the theme
+Create a `.env` file in the root directory:
 
-Open `client/global.css` and `tailwind.config.ts` and add new tailwind colors.
+```env
+# AI API Keys (optional for demo mode)
+HUGGING_FACE_API_KEY=your_hf_api_key_here
+STABILITY_API_KEY=your_stability_api_key_here
 
-### New API Route
-1. **Optional**: Create a shared interface in `shared/api.ts`:
+# JWT Secret (change in production)
+JWT_SECRET=your-super-secret-jwt-key-for-production
+
+# Server Configuration
+PORT=8080
+NODE_ENV=development
+```
+
+### 3. Start Development Server
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:8080`
+
+## 🎯 Demo Accounts
+
+For testing purposes, you can use:
+
+- **Email**: `demo@aicreate.app`
+- **Password**: `demo123`
+
+Or create a new account through the registration flow.
+
+## 📱 Application Flow
+
+### 1. Landing Page
+
+- **Hero Section**: Interactive demo with live preview
+- **Content Showcase**: Carousel of AI-generated content
+- **Feature Overview**: Detailed feature explanations
+- **Pricing Plans**: Clear pricing with feature comparison
+- **Testimonials**: User feedback and reviews
+
+### 2. Authentication
+
+- **Sign Up/Login**: Secure authentication modal
+- **Account Verification**: Email validation (configurable)
+- **Password Security**: Bcrypt hashing with salt rounds
+- **Session Management**: Persistent login with JWT tokens
+
+### 3. Dashboard
+
+- **Generation Interface**: Separate tabs for image and video creation
+- **Real-time Tracking**: Live status updates with progress indicators
+- **History Management**: Complete generation history with filtering
+- **Favorites System**: Save and organize best creations
+- **Account Settings**: Profile and subscription management
+
+### 4. Generation Process
+
+1. **Prompt Input**: User enters text description
+2. **Parameter Selection**: Choose style, quality, aspect ratio, etc.
+3. **Credit Validation**: Check sufficient credits before processing
+4. **Queue Addition**: Add to generation queue with position tracking
+5. **AI Processing**: Send request to appropriate AI service
+6. **Real-time Updates**: Live status updates via polling
+7. **Result Delivery**: Download and save completed generations
+
+## 🔧 AI Configuration
+
+### Hugging Face Integration
+
 ```typescript
-export interface MyRouteResponse {
-  message: string;
-  // Add other response properties here
-}
+// Configure in server/lib/ai-service.ts
+const HF_API_URL = "https://api-inference.huggingface.co/models";
+const HF_API_KEY = process.env.HUGGING_FACE_API_KEY;
+
+// Available models
+-runwayml / stable -
+  diffusion -
+  v1 -
+  5 -
+  stabilityai / stable -
+  diffusion -
+  xl -
+  base -
+  1.0 -
+  CompVis / stable -
+  diffusion -
+  v1 -
+  4;
 ```
 
-2. Create a new route handler in `server/routes/my-route.ts`:
-```typescript
-import { RequestHandler } from "express";
-import { MyRouteResponse } from "@shared/api"; // Optional: for type safety
+### Demo Mode
 
-export const handleMyRoute: RequestHandler = (req, res) => {
-  const response: MyRouteResponse = {
-    message: 'Hello from my endpoint!'
-  };
-  res.json(response);
-};
+Without API keys, the application runs in demo mode with:
+
+- **Placeholder Images**: High-quality Unsplash images
+- **Simulated Processing**: Realistic delays and progress updates
+- **Full Functionality**: Complete user experience without API costs
+
+## 🎨 Customization
+
+### Adding New AI Models
+
+1. Update `server/lib/ai-service.ts` with new model configurations
+2. Add model options to the dashboard forms
+3. Update pricing in the credit system
+4. Test integration with model-specific parameters
+
+### Custom Branding
+
+1. Update brand colors in `client/global.css`
+2. Replace logo and icons in components
+3. Customize landing page content in `client/lib/data.ts`
+4. Update meta tags and SEO information
+
+### Database Integration
+
+Replace the in-memory database with a real database:
+
+1. Install database driver (pg for PostgreSQL, mongoose for MongoDB)
+2. Update `server/lib/database.ts` with real database operations
+3. Add migration scripts for schema setup
+4. Configure connection pooling and error handling
+
+## 🚢 Production Deployment
+
+### Environment Variables
+
+```env
+NODE_ENV=production
+JWT_SECRET=your-production-jwt-secret-256-bit
+HUGGING_FACE_API_KEY=your-production-hf-key
+STABILITY_API_KEY=your-production-stability-key
+DATABASE_URL=your-database-connection-string
+REDIS_URL=your-redis-connection-string
 ```
 
-3. Register the route in `server/index.ts`:
-```typescript
-import { handleMyRoute } from "./routes/my-route";
+### Build Process
 
-// Add to the createServer function:
-app.get("/api/my-endpoint", handleMyRoute);
+```bash
+npm run build
+npm start
 ```
 
-4. Use in React components with type safety:
-```typescript
-import { MyRouteResponse } from '@shared/api'; // Optional: for type safety
+### Deployment Platforms
 
-const response = await fetch('/api/my-endpoint');
-const data: MyRouteResponse = await response.json();
-```
+- **Vercel**: Frontend deployment with serverless functions
+- **Railway**: Full-stack deployment with database
+- **Render**: Container-based deployment
+- **AWS/GCP**: Enterprise-grade deployment with load balancing
 
-### New Page Route
-1. Create component in `client/pages/MyPage.tsx`
-2. Add route in `client/App.tsx`:
-```typescript
-<Route path="/my-page" element={<MyPage />} />
-```
+## 🔒 Security Features
 
-## Production Deployment
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: Bcrypt with configurable salt rounds
+- **Input Validation**: Comprehensive input sanitization
+- **Rate Limiting**: API endpoint protection (configurable)
+- **CORS Configuration**: Cross-origin request security
+- **Session Management**: Secure session handling with expiration
 
-- **Standard**: `npm run build` + `npm start`
-- **Docker**: Dockerfile included
-- **Binary**: Self-contained executables (Linux, macOS, Windows)
-- Express serves the built React SPA with fallback routing support
+## 📊 Monitoring & Analytics
 
-## Architecture Notes
+### Built-in Tracking
 
-- Single-port development with Vite + Express integration
-- TypeScript throughout (client, server, shared)
-- Full hot reload for rapid development
-- Production-ready with multiple deployment options
-- Comprehensive UI component library included
-- Type-safe API communication via shared interfaces
+- **Generation Metrics**: Success rates, processing times
+- **User Analytics**: Registration, usage patterns
+- **Credit Consumption**: Revenue and cost tracking
+- **Error Monitoring**: Failed generations and API errors
+
+### Integration Ready
+
+- **Stripe**: Payment processing and subscription management
+- **Sentry**: Error tracking and performance monitoring
+- **Google Analytics**: User behavior tracking
+- **Mixpanel**: Event tracking and user funnels
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with proper TypeScript types
+4. Add tests for new functionality
+5. Submit a pull request with detailed description
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue on GitHub
+- Check the documentation
+- Review the code comments for implementation details
+
+---
+
+**Built with ❤️ using React, TypeScript, and modern web technologies.**
