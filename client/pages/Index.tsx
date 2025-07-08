@@ -91,7 +91,7 @@ export default function Index() {
                   <Button
                     size="sm"
                     className="bg-gradient-ai hover:opacity-90"
-                    onClick={() => (window.location.href = "/generate")}
+                    onClick={() => (window.location.href = "/studio")}
                   >
                     Open Studio
                   </Button>
