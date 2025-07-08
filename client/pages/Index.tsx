@@ -60,7 +60,11 @@ export default function Index() {
               <Button variant="ghost" size="sm">
                 Sign In
               </Button>
-              <Button size="sm" className="bg-gradient-ai hover:opacity-90">
+              <Button
+                size="sm"
+                className="bg-gradient-ai hover:opacity-90"
+                onClick={() => (window.location.href = "/dashboard")}
+              >
                 Get Started <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
