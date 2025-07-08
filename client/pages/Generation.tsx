@@ -268,26 +268,12 @@ export default function Generation() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Access Required</CardTitle>
-            <CardDescription>
-              Please sign in to access the AI generation studio
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" onClick={() => setAuthModalOpen(true)}>
-              Sign In to Continue
-            </Button>
-          </CardContent>
-        </Card>
-        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
-      </div>
-    );
-  }
+  // Show auth modal automatically for unauthenticated users
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-background">
