@@ -83,5 +83,10 @@ export function createServer() {
   app.get("/api/studio/image/:id", handleStudioImageStatus);
   app.get("/api/studio/video/:id", handleStudioVideoStatus);
 
+  // Dashboard routes
+  app.get("/api/dashboard/generations", getUserGenerations);
+  app.get("/api/dashboard/stats", getUserStats);
+  app.post("/api/dashboard/generations/:id/favorite", toggleFavorite);
+
   return app;
 }
