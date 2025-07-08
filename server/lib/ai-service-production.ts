@@ -1,3 +1,5 @@
+import { generateVideoWithHuggingFace } from "./huggingface-video";
+
 export interface GenerationRequest {
   prompt: string;
   model: string;
