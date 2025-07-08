@@ -82,57 +82,78 @@ export async function generateVideo(
   try {
     console.log("Generating video with free API:", request);
 
-    // For video, we'll use a different approach since Pollinations doesn't have video
-    // We can use Hugging Face Inference API for free video generation
-
-    // Try using Hugging Face's free models for video generation
+    // Try multiple approaches for video generation
     const HF_TOKEN = process.env.HF_TOKEN;
 
     if (HF_TOKEN) {
-      // Use Hugging Face's text-to-video models
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/ali-vilab/text-to-video-ms-1.7b",
-        {
-          headers: {
-            Authorization: `Bearer ${HF_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            inputs: request.prompt,
-            parameters: {
-              num_frames: Math.min((request.duration || 3) * 8, 24),
-              num_inference_steps: 20,
+      console.log("Attempting video generation with Hugging Face...");
+
+      // Try different HF models that might work better
+      const models = [
+        "damo-vilab/text-to-video-ms-1.7b",
+        "ali-vilab/text-to-video-ms-1.7b",
+        "cerspense/zeroscope_v2_576w",
+      ];
+
+      for (const model of models) {
+        try {
+          console.log(`Trying model: ${model}`);
+          const response = await fetch(
+            `https://api-inference.huggingface.co/models/${model}`,
+            {
+              headers: {
+                Authorization: `Bearer ${HF_TOKEN}`,
+                "Content-Type": "application/json",
+              },
+              method: "POST",
+              body: JSON.stringify({
+                inputs: request.prompt,
+                parameters: {
+                  num_frames: Math.min((request.duration || 3) * 8, 16),
+                  num_inference_steps: 15,
+                },
+              }),
             },
-          }),
-        },
-      );
+          );
 
-      if (response.ok) {
-        const blob = await response.blob();
+          if (response.ok) {
+            const contentType = response.headers.get("content-type");
+            console.log("Response content type:", contentType);
 
-        // Convert blob to base64 for client
-        const buffer = await blob.arrayBuffer();
-        const base64 = Buffer.from(buffer).toString("base64");
-        const videoUrl = `data:video/mp4;base64,${base64}`;
+            if (contentType && contentType.includes("video")) {
+              const blob = await response.blob();
 
-        return {
-          id: generationId,
-          url: videoUrl,
-          status: "completed",
-        };
+              // Convert blob to base64 for client
+              const buffer = await blob.arrayBuffer();
+              const base64 = Buffer.from(buffer).toString("base64");
+              const videoUrl = `data:video/mp4;base64,${base64}`;
+
+              console.log("Successfully generated video with model:", model);
+              return {
+                id: generationId,
+                url: videoUrl,
+                status: "completed",
+              };
+            }
+          } else {
+            console.log(`Model ${model} failed with status:`, response.status);
+          }
+        } catch (modelError) {
+          console.log(`Model ${model} error:`, modelError);
+          continue;
+        }
       }
     }
 
-    // Fallback to demo video if no HF token or API fails
-    console.log("Using demo video fallback");
-    return getDemoResult("video", generationId);
+    // If no HF token or all models failed, create a prompt-based demo video
+    console.log("Creating prompt-based demo video fallback");
+    return getPromptBasedDemoVideo(request.prompt, generationId);
   } catch (error) {
     console.error("Video generation error:", error);
 
-    // Fallback to demo on error
-    console.log("Using demo video due to error");
-    return getDemoResult("video", generationId);
+    // Fallback to prompt-based demo
+    console.log("Using prompt-based demo video due to error");
+    return getPromptBasedDemoVideo(request.prompt, generationId);
   }
 }
 
