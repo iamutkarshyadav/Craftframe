@@ -69,7 +69,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => (window.location.href = "/generate")}
+                onClick={() => (window.location.href = "/studio")}
                 className="text-sm"
               >
                 Studio
