@@ -47,7 +47,14 @@ export const handleImageGeneration = [
   async (req: any, res: any) => {
     try {
       const user = req.user;
-      const { prompt, model = "flux-schnell", size = "1024x1024" } = req.body;
+      const {
+        prompt,
+        model = "flux-dev",
+        size = "1024x1024",
+        category = "photorealistic",
+        steps,
+        cfg_scale,
+      } = req.body;
 
       if (!prompt || prompt.trim().length === 0) {
         return res.status(400).json({ message: "Prompt is required" });
