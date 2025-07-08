@@ -212,15 +212,28 @@ export function ResultCanvas({
                             : "opacity-0 scale-105"
                         } group-hover:scale-110`}
                         loading="lazy"
+                        crossOrigin="anonymous"
                         onLoad={() =>
                           setImageLoaded((prev) => ({
                             ...prev,
                             [generation.id]: true,
                           }))
                         }
+                        onError={() => {
+                          console.error(
+                            "Failed to load image:",
+                            generation.url,
+                          );
+                          setImageLoaded((prev) => ({
+                            ...prev,
+                            [generation.id]: true,
+                          }));
+                        }}
                       />
                       {!imageLoaded[generation.id] && (
-                        <div className="absolute inset-0 bg-muted animate-pulse" />
+                        <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+                          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
                       )}
                     </div>
                   ) : (
