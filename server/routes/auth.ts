@@ -177,9 +177,7 @@ export const handleCreateDemoUser: RequestHandler = async (req, res) => {
       console.log(
         "Removing existing demo user to recreate with proper password",
       );
-      // Since we can't easily delete from the Map by email, we'll need to import the users Map
-      const { users } = require("../lib/database");
-      users.delete(existingUser.id);
+      deleteUser(existingUser.id);
     }
 
     // Hash the password properly
