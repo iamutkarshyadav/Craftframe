@@ -56,7 +56,8 @@ export default function Index() {
 
   const prevSlide = () => {
     setCurrentSlide(
-      (prev) => (prev - 1 + sampleGenerations.length) % sampleGenerations.length,
+      (prev) =>
+        (prev - 1 + sampleGenerations.length) % sampleGenerations.length,
     );
   };
 
@@ -100,7 +101,11 @@ export default function Index() {
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <ThemeToggle />
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:inline-flex"
+              >
                 Sign In
               </Button>
               <Button
@@ -138,7 +143,8 @@ export default function Index() {
               className="bg-gradient-ai hover:opacity-90 px-6 md:px-8 py-4 md:py-6 text-base md:text-lg"
               onClick={() => (window.location.href = "/dashboard")}
             >
-              Start Creating Free <ArrowRight className="w-4 md:w-5 h-4 md:h-5 ml-2" />
+              Start Creating Free{" "}
+              <ArrowRight className="w-4 md:w-5 h-4 md:h-5 ml-2" />
             </Button>
             <Button
               size="lg"
@@ -233,7 +239,9 @@ export default function Index() {
                       )}
                       <div className="absolute top-4 left-4">
                         <Badge
-                          variant={item.type === "image" ? "default" : "secondary"}
+                          variant={
+                            item.type === "image" ? "default" : "secondary"
+                          }
                         >
                           {item.type === "image" ? (
                             <Image className="w-3 h-3 mr-1" />
@@ -352,21 +360,15 @@ export default function Index() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => {
-            const IconComponent = {
+            const iconMap: Record<string, any> = {
               Image,
               Video,
               Zap,
               Shield,
               Users,
               Sparkles,
-            }[feature.icon as keyof typeof {
-              Image: typeof Image;
-              Video: typeof Video;
-              Zap: typeof Zap;
-              Shield: typeof Shield;
-              Users: typeof Users;
-              Sparkles: typeof Sparkles;
-            }];
+            };
+            const IconComponent = iconMap[feature.icon];
 
             return (
               <Card
@@ -444,7 +446,10 @@ export default function Index() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="container mx-auto px-4 py-16 md:py-24">
+      <section
+        id="testimonials"
+        className="container mx-auto px-4 py-16 md:py-24"
+      >
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Loved by <span className="text-gradient">Creators</span>
@@ -472,7 +477,9 @@ export default function Index() {
                     {testimonial.avatar}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold">{testimonial.author}</p>
+                    <p className="text-sm font-semibold">
+                      {testimonial.author}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {testimonial.role}
                     </p>
@@ -488,7 +495,8 @@ export default function Index() {
       <section className="container mx-auto px-4 py-16 md:py-24 bg-surface/50">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Create Something <span className="text-gradient">Amazing</span>?
+            Ready to Create Something{" "}
+            <span className="text-gradient">Amazing</span>?
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground mb-8">
             Join thousands of creators who are already using AI to transform
