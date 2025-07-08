@@ -161,6 +161,14 @@ export async function generateImage(
       enhancedPrompt += `, ${request.style}`;
     }
 
+    // Apply advanced settings to prompt enhancement
+    if (request.steps && request.steps > 30) {
+      enhancedPrompt += ", ultra detailed, masterpiece";
+    }
+    if (request.cfg_scale && request.cfg_scale > 10) {
+      enhancedPrompt += ", highly accurate, precise composition";
+    }
+
     const encodedPrompt = encodeURIComponent(enhancedPrompt);
 
     // Enhanced dimensions - ensure 2K+ quality
@@ -184,23 +192,53 @@ export async function generateImage(
     const timestamp = Date.now();
     let imageUrl = "";
 
-    // Category-optimized generation
+    // Build parameters object
+    const params = new URLSearchParams({
+      width: width.toString(),
+      height: height.toString(),
+      enhance: "true",
+      nologo: "true",
+      private: "true",
+      seed: timestamp.toString(),
+    });
+
+    // Add advanced parameters if provided
+    if (request.steps) {
+      params.append(
+        "steps",
+        Math.min(Math.max(request.steps, 10), 50).toString(),
+      );
+    }
+    if (request.cfg_scale) {
+      params.append(
+        "guidance",
+        Math.min(Math.max(request.cfg_scale, 1), 20).toString(),
+      );
+    }
+
+    // Category-optimized generation with parameters
+    const baseUrl = "https://image.pollinations.ai/prompt";
+    let modelParam = "";
+
     switch (categoryConfig.model) {
       case "flux-pro":
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux-pro&enhance=true&nologo=true&private=true&seed=${timestamp}`;
+        modelParam = "flux-pro";
         break;
       case "flux-anime":
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux-anime&enhance=true&nologo=true&private=true&seed=${timestamp}`;
+        modelParam = "flux-anime";
         break;
       case "flux-dev":
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux-dev&enhance=true&nologo=true&private=true&seed=${timestamp}`;
+        modelParam = "flux-dev";
         break;
       case "flux-schnell":
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux-schnell&enhance=true&nologo=true&private=true&seed=${timestamp}`;
+        modelParam = "flux-schnell";
         break;
       default:
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&enhance=true&nologo=true&private=true&seed=${timestamp}`;
+        modelParam = "flux";
     }
+
+    params.append("model", modelParam);
+    imageUrl = `${baseUrl}/${encodedPrompt}?${params.toString()}`;
 
     console.log(
       `Generated ${category} image URL (${width}x${height}):`,
