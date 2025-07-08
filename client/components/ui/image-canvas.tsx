@@ -10,6 +10,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "@/hooks/use-toast";
+import {
   Download,
   Share2,
   Heart,
@@ -26,33 +34,49 @@ import {
   Info,
   Loader2,
   ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  Link,
+  Camera,
+  Monitor,
+  Smartphone,
+  Square,
 } from "lucide-react";
 
+interface Generation {
+  id: string;
+  type: "image" | "video";
+  prompt: string;
+  url: string;
+  status: "generating" | "completed" | "failed";
+  createdAt: string;
+  settings?: any;
+  metadata?: any;
+}
+
 interface ImageCanvasProps {
-  imageUrl?: string;
-  prompt?: string;
+  generations?: Generation[];
+  currentIndex?: number;
   isLoading?: boolean;
-  metadata?: {
-    width?: number;
-    height?: number;
-    model?: string;
-    enhancedPrompt?: string;
-  };
-  onDownload?: () => void;
-  onShare?: () => void;
-  onLike?: () => void;
-  liked?: boolean;
+  onIndexChange?: (index: number) => void;
+  onDownload?: (generation: Generation) => void;
+  onShare?: (generation: Generation, platform: string) => void;
+  onLike?: (generation: Generation) => void;
 }
 
 export function ImageCanvas({
-  imageUrl,
-  prompt,
+  generations = [],
+  currentIndex = 0,
   isLoading = false,
-  metadata,
+  onIndexChange,
   onDownload,
   onShare,
   onLike,
-  liked = false,
 }: ImageCanvasProps) {
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -67,12 +91,15 @@ export function ImageCanvas({
   const canvasRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
+  const currentGeneration = generations[currentIndex];
+  const hasMultiple = generations.length > 1;
+
   useEffect(() => {
     setImageLoaded(false);
     setImageError(false);
     setZoom(1);
     setPosition({ x: 0, y: 0 });
-  }, [imageUrl]);
+  }, [currentIndex, currentGeneration?.url]);
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev * 1.2, 5));
@@ -111,8 +138,25 @@ export function ImageCanvas({
   };
 
   const handleCopyPrompt = () => {
-    if (prompt) {
-      navigator.clipboard.writeText(prompt);
+    if (currentGeneration?.prompt) {
+      navigator.clipboard.writeText(currentGeneration.prompt);
+      toast({
+        title: "Copied",
+        description: "Prompt copied to clipboard",
+      });
+    }
+  };
+
+  const handleCopyImageUrl = () => {
+    if (currentGeneration?.url) {
+      const fullUrl = currentGeneration.url.startsWith("http")
+        ? currentGeneration.url
+        : `${window.location.origin}${currentGeneration.url}`;
+      navigator.clipboard.writeText(fullUrl);
+      toast({
+        title: "Copied",
+        description: "Image URL copied to clipboard",
+      });
     }
   };
 
@@ -130,12 +174,78 @@ export function ImageCanvas({
     setIsFullscreen(!isFullscreen);
   };
 
+  const handlePrevious = () => {
+    if (hasMultiple && onIndexChange) {
+      const newIndex =
+        currentIndex > 0 ? currentIndex - 1 : generations.length - 1;
+      onIndexChange(newIndex);
+    }
+  };
+
+  const handleNext = () => {
+    if (hasMultiple && onIndexChange) {
+      const newIndex =
+        currentIndex < generations.length - 1 ? currentIndex + 1 : 0;
+      onIndexChange(newIndex);
+    }
+  };
+
+  const handleSocialShare = (platform: string) => {
+    if (!currentGeneration) return;
+
+    const fullUrl = currentGeneration.url.startsWith("http")
+      ? currentGeneration.url
+      : `${window.location.origin}${currentGeneration.url}`;
+
+    const text = `Check out this AI-generated image: "${currentGeneration.prompt}"`;
+    const hashtags = "AIArt,AIGenerated,DigitalArt";
+
+    let shareUrl = "";
+
+    switch (platform) {
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(fullUrl)}&hashtags=${hashtags}`;
+        break;
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}&quote=${encodeURIComponent(text)}`;
+        break;
+      case "linkedin":
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl)}&summary=${encodeURIComponent(text)}`;
+        break;
+      case "whatsapp":
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${fullUrl}`)}`;
+        break;
+      case "telegram":
+        shareUrl = `https://t.me/share/url?url=${encodeURIComponent(fullUrl)}&text=${encodeURIComponent(text)}`;
+        break;
+      default:
+        handleCopyImageUrl();
+        return;
+    }
+
+    window.open(shareUrl, "_blank", "width=600,height=400");
+
+    if (onShare) {
+      onShare(currentGeneration, platform);
+    }
+  };
+
+  const getSizeInfo = () => {
+    if (!currentGeneration?.metadata) return null;
+    const { width, height } = currentGeneration.metadata;
+    if (width && height) {
+      const megapixels = ((width * height) / 1000000).toFixed(1);
+      return `${width}×${height} (${megapixels}MP)`;
+    }
+    return null;
+  };
+
   return (
     <Card
       className={`overflow-hidden transition-all duration-300 ${
         isFullscreen
           ? "fixed inset-4 z-50 max-w-none max-h-none"
-          : "max-w-4xl mx-auto"
+          : "max-w-6xl mx-auto"
       }`}
     >
       <CardHeader className="pb-4">
@@ -144,14 +254,48 @@ export function ImageCanvas({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-600">
               <ImageIcon className="h-4 w-4 text-white" />
             </div>
-            <CardTitle className="text-lg">AI Image Canvas</CardTitle>
-            {metadata && (
-              <Badge variant="secondary">
-                {metadata.width}×{metadata.height}
+            <div>
+              <CardTitle className="text-lg">AI Image Canvas</CardTitle>
+              {hasMultiple && (
+                <CardDescription className="text-sm">
+                  {currentIndex + 1} of {generations.length} images
+                </CardDescription>
+              )}
+            </div>
+            {currentGeneration?.metadata?.category && (
+              <Badge variant="secondary" className="capitalize">
+                {currentGeneration.metadata.category.replace("-", " ")}
               </Badge>
             )}
+            {getSizeInfo() && <Badge variant="outline">{getSizeInfo()}</Badge>}
           </div>
+
           <div className="flex items-center space-x-2">
+            {/* Canvas Switching Controls */}
+            {hasMultiple && (
+              <div className="flex items-center space-x-1 mr-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePrevious}
+                  disabled={!hasMultiple}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium min-w-[40px] text-center">
+                  {currentIndex + 1}/{generations.length}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleNext}
+                  disabled={!hasMultiple}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
             <Button
               variant="ghost"
               size="sm"
@@ -169,18 +313,25 @@ export function ImageCanvas({
           </div>
         </div>
 
-        {showInfo && prompt && (
+        {showInfo && currentGeneration?.prompt && (
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <CardDescription className="text-sm mb-2">Prompt:</CardDescription>
-            <p className="text-sm font-medium mb-2">{prompt}</p>
-            <div className="flex items-center gap-2">
+            <p className="text-sm font-medium mb-2">
+              {currentGeneration.prompt}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleCopyPrompt}>
                 <Copy className="mr-2 h-3 w-3" />
                 Copy Prompt
               </Button>
-              {metadata && (
+              {currentGeneration.metadata?.model && (
                 <Badge variant="outline" className="text-xs">
-                  {metadata.model}
+                  {currentGeneration.metadata.model}
+                </Badge>
+              )}
+              {currentGeneration.metadata?.enhancedPrompt && (
+                <Badge variant="outline" className="text-xs">
+                  Enhanced
                 </Badge>
               )}
             </div>
@@ -215,18 +366,59 @@ export function ImageCanvas({
               <Grid3X3 className="h-4 w-4" />
             </Button>
             <Separator orientation="vertical" className="h-6" />
+
+            {/* Social Share Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!currentGeneration}
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => handleSocialShare("twitter")}>
+                  <Twitter className="mr-2 h-4 w-4" />
+                  Share on Twitter
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSocialShare("facebook")}>
+                  <Facebook className="mr-2 h-4 w-4" />
+                  Share on Facebook
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSocialShare("linkedin")}>
+                  <Linkedin className="mr-2 h-4 w-4" />
+                  Share on LinkedIn
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSocialShare("whatsapp")}>
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Share on WhatsApp
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleCopyImageUrl}>
+                  <Link className="mr-2 h-4 w-4" />
+                  Copy Link
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="outline"
               size="sm"
-              onClick={onLike}
-              className={liked ? "text-red-500" : ""}
+              onClick={() => currentGeneration && onLike?.(currentGeneration)}
+              disabled={!currentGeneration}
             >
-              <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+              <Heart className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm" onClick={onShare}>
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={onDownload}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                currentGeneration && onDownload?.(currentGeneration)
+              }
+              disabled={!currentGeneration}
+            >
               <Download className="h-4 w-4" />
             </Button>
           </div>
@@ -291,7 +483,7 @@ export function ImageCanvas({
           )}
 
           {/* Image */}
-          {imageUrl && !isLoading && (
+          {currentGeneration?.url && !isLoading && (
             <div
               className="absolute inset-0 flex items-center justify-center"
               style={{
@@ -300,8 +492,8 @@ export function ImageCanvas({
             >
               <img
                 ref={imageRef}
-                src={imageUrl}
-                alt={prompt || "Generated image"}
+                src={currentGeneration.url}
+                alt={currentGeneration.prompt || "Generated image"}
                 className="max-w-none transition-transform duration-200"
                 style={{
                   transform: `scale(${zoom})`,
@@ -315,8 +507,30 @@ export function ImageCanvas({
             </div>
           )}
 
+          {/* Navigation Arrows for Multiple Images */}
+          {hasMultiple && !isLoading && imageLoaded && (
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white border-0"
+                onClick={handlePrevious}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white border-0"
+                onClick={handleNext}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+
           {/* Placeholder */}
-          {!imageUrl && !isLoading && (
+          {!currentGeneration && !isLoading && (
             <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-muted-foreground/25">
               <div className="text-center">
                 <Palette className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
@@ -332,12 +546,12 @@ export function ImageCanvas({
         {/* Status Bar */}
         <div className="flex items-center justify-between p-3 bg-muted/50 text-xs text-muted-foreground">
           <div className="flex items-center space-x-4">
-            {imageLoaded && metadata && (
+            {imageLoaded && currentGeneration?.metadata && (
               <>
-                <span>
-                  Resolution: {metadata.width}×{metadata.height}
-                </span>
-                <span>Model: {metadata.model}</span>
+                {getSizeInfo() && <span>Resolution: {getSizeInfo()}</span>}
+                {currentGeneration.metadata.model && (
+                  <span>Model: {currentGeneration.metadata.model}</span>
+                )}
                 <span>Quality: 2K+</span>
               </>
             )}
@@ -345,6 +559,7 @@ export function ImageCanvas({
           <div className="flex items-center space-x-2">
             {zoom > 1 && <span>Click and drag to pan • Scroll to zoom</span>}
             {imageLoaded && <span>Image loaded successfully</span>}
+            {hasMultiple && <span>Use arrow keys or buttons to navigate</span>}
           </div>
         </div>
       </CardContent>
@@ -377,7 +592,11 @@ const checkeredStyle = `
 
 // Inject the CSS
 if (typeof document !== "undefined") {
-  const style = document.createElement("style");
-  style.textContent = checkeredStyle;
-  document.head.appendChild(style);
+  const existingStyle = document.querySelector("style[data-canvas-styles]");
+  if (!existingStyle) {
+    const style = document.createElement("style");
+    style.setAttribute("data-canvas-styles", "true");
+    style.textContent = checkeredStyle;
+    document.head.appendChild(style);
+  }
 }
