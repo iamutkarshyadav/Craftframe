@@ -170,13 +170,15 @@ export const handleLogout: RequestHandler = async (req, res) => {
 // Create demo user (for setup)
 export const handleCreateDemoUser: RequestHandler = async (req, res) => {
   try {
-    // Check if demo user already exists
+    // Remove existing demo user if it exists
     const existingUser = findUserByEmail("demo@aicreate.app");
     if (existingUser) {
-      return res.json({
-        message: "Demo user already exists",
-        user: { email: existingUser.email, name: existingUser.name },
-      });
+      console.log(
+        "Removing existing demo user to recreate with proper password",
+      );
+      // Since we can't easily delete from the Map by email, we'll need to import the users Map
+      const { users } = require("../lib/database");
+      users.delete(existingUser.id);
     }
 
     // Hash the password properly
