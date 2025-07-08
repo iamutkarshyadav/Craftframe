@@ -155,6 +155,103 @@ export async function generateVideo(
   }
 }
 
+// Generate image with Hugging Face best models
+async function generateImageWithHuggingFace(
+  request: GenerationRequest,
+): Promise<GenerationResult> {
+  const HF_TOKEN =
+    process.env.HUGGING_FACE_API_KEY || "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";
+  const generationId = `hf_img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  // Best-in-business image models
+  const imageModels = [
+    {
+      id: "black-forest-labs/FLUX.1-dev",
+      name: "FLUX.1 Dev",
+      quality: "premium",
+      description: "State-of-the-art image generation",
+    },
+    {
+      id: "stabilityai/stable-diffusion-xl-base-1.0",
+      name: "SDXL",
+      quality: "professional",
+      description: "High-resolution image synthesis",
+    },
+    {
+      id: "ByteDance/SDXL-Lightning",
+      name: "SDXL-Lightning",
+      quality: "ultra-fast",
+      description: "Lightning-fast generation",
+    },
+    {
+      id: "runwayml/stable-diffusion-v1-5",
+      name: "Stable Diffusion 1.5",
+      quality: "reliable",
+      description: "Proven image generation",
+    },
+  ];
+
+  for (const model of imageModels) {
+    try {
+      console.log(`Trying HF image model: ${model.name}`);
+
+      const response = await fetch(
+        `https://api-inference.huggingface.co/models/${model.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputs: request.prompt,
+            parameters: {
+              num_inference_steps: request.steps || 30,
+              guidance_scale: request.cfg_scale || 7.5,
+              width: 1024,
+              height: 1024,
+            },
+            options: {
+              wait_for_model: true,
+              use_cache: false,
+            },
+          }),
+        },
+      );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size > 1000) {
+          const buffer = await blob.arrayBuffer();
+          const base64 = Buffer.from(buffer).toString("base64");
+          const imageUrl = `data:image/png;base64,${base64}`;
+
+          console.log(`Successfully generated image with ${model.name}`);
+          return {
+            id: generationId,
+            url: imageUrl,
+            status: "completed",
+            metadata: {
+              source: "huggingface",
+              model: model.name,
+              model_id: model.id,
+              quality: model.quality,
+              width: 1024,
+              height: 1024,
+              size: blob.size,
+            },
+          };
+        }
+      }
+    } catch (error) {
+      console.log(`Error with HF model ${model.name}:`, error);
+      continue;
+    }
+  }
+
+  throw new Error("All Hugging Face image models failed");
+}
+
 // Enhanced image generation with categories
 export async function generateImage(
   request: GenerationRequest,
@@ -163,6 +260,19 @@ export async function generateImage(
 
   try {
     console.log("Generating categorized image:", request);
+
+    // Try Hugging Face models first for premium quality
+    if (request.model === "huggingface" || request.model === "flux-pro") {
+      try {
+        const hfResult = await generateImageWithHuggingFace(request);
+        if (hfResult.url) {
+          console.log("Successfully generated image with Hugging Face");
+          return hfResult;
+        }
+      } catch (error) {
+        console.log("Hugging Face failed, using fallback:", error);
+      }
+    }
 
     // Get category settings
     const category = request.category || "photorealistic";

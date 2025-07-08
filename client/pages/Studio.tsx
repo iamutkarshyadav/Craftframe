@@ -419,6 +419,26 @@ export default function Studio() {
                 title: "Generation Complete",
                 description: `Your ${type} has been generated successfully!`,
               });
+
+              // Auto-scroll to canvas
+              const canvasElement = document.querySelector(
+                '[data-canvas="true"]',
+              );
+              if (canvasElement) {
+                canvasElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+
+              // Update canvas index to show latest generation
+              if (type === "image") {
+                const imageGens = generations.filter(
+                  (g) =>
+                    g.type === "image" && g.status === "completed" && g.url,
+                );
+                setCurrentCanvasIndex(Math.max(0, imageGens.length - 1));
+              }
             }
             return;
           }
@@ -561,7 +581,7 @@ export default function Studio() {
       <div className="container mx-auto px-4 lg:px-6 py-8 max-w-7xl">
         <div className="space-y-8">
           {/* Canvas Section */}
-          <section>
+          <section data-canvas="true">
             <ImageCanvas
               generations={imageGenerations}
               currentIndex={currentCanvasIndex}
