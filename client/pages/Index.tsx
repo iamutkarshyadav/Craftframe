@@ -105,22 +105,40 @@ export default function Index() {
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <ThemeToggle />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                Sign In
-              </Button>
-              <Button
-                size="sm"
-                className="bg-gradient-ai hover:opacity-90 text-xs sm:text-sm px-3 sm:px-4"
-                onClick={() => (window.location.href = "/dashboard")}
-              >
-                <span className="hidden sm:inline">Get Started</span>
-                <span className="sm:hidden">Start</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
-              </Button>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground hidden sm:inline">
+                    {user?.name}
+                  </span>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-ai hover:opacity-90"
+                    onClick={() => (window.location.href = "/dashboard")}
+                  >
+                    Dashboard
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:inline-flex"
+                    onClick={() => setAuthModalOpen(true)}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-ai hover:opacity-90 text-xs sm:text-sm px-3 sm:px-4"
+                    onClick={() => setAuthModalOpen(true)}
+                  >
+                    <span className="hidden sm:inline">Get Started</span>
+                    <span className="sm:hidden">Start</span>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
