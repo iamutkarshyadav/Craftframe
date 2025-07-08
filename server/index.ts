@@ -31,6 +31,11 @@ import {
   handleGetImageStatus as handleStudioImageStatus,
   handleGetVideoStatus as handleStudioVideoStatus,
 } from "./routes/studio";
+import {
+  getUserGenerations,
+  getUserStats,
+  toggleFavorite,
+} from "./routes/dashboard";
 
 export function createServer() {
   const app = express();
