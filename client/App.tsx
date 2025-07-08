@@ -13,7 +13,14 @@ import Studio from "./pages/Studio";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -27,7 +34,10 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/studio" element={<Studio />} />
               <Route path="/generate" element={<Studio />} />
+              <Route path="/create" element={<Studio />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Dashboard />} />
+              <Route path="/generations" element={<Dashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
