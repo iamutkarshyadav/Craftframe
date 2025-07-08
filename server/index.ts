@@ -48,13 +48,23 @@ export function createServer() {
   app.get("/api/auth/me", handleMe);
   app.post("/api/auth/logout", handleLogout);
 
-  // Generation routes
+  // Generation routes (legacy)
   app.post("/api/generate", handleGenerate);
   app.get("/api/generate/:id", handleGenerationStatus);
   app.get("/api/generations", handleGenerationHistory);
   app.post("/api/generations/:id/like", handleToggleLike);
   app.get("/api/models", handleGetModels);
   app.get("/api/queue", handleQueueStatus);
+
+  // Hugging Face specific routes
+  app.post("/api/generate/image", handleImageGeneration);
+  app.get("/api/generate/image/:id", handleImageStatus);
+  app.post("/api/generate/video", handleVideoGeneration);
+  app.get("/api/generate/video/:id", handleVideoStatus);
+
+  // Direct generation routes (for testing)
+  app.post("/api/direct/image", handleDirectImageGeneration);
+  app.post("/api/direct/video", handleDirectVideoGeneration);
 
   return app;
 }
