@@ -188,12 +188,34 @@ export const downloadAsZip = async (
   zipName: string = "aicreate-generations",
 ): Promise<void> => {
   try {
-    // Note: JSZip would need to be installed separately
-    // For now, we'll use individual downloads
-    console.log("ZIP download requested for:", generations.length, "files");
-    await downloadBatch(generations);
-    // For demo purposes, we'll download files individually
-    return;
+    // Dynamic import to avoid bundling JSZip if not needed
+    const JSZip = (await import("jszip")).default;
+    const zip = new JSZip();
+
+    const downloadPromises = generations.map(async (generation) => {
+      try {
+        const response = await fetch(generation.url);
+        const blob = await response.blob();
+        const extension = generation.type === "image" ? "png" : "mp4";
+        const filename = generateFilename(generation, extension);
+        zip.file(filename, blob);
+      } catch (error) {
+        console.error(`Failed to add ${generation.id} to zip:`, error);
+      }
+    });
+
+    await Promise.all(downloadPromises);
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${zipName}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   } catch (error) {
     console.error("ZIP download failed:", error);
     throw new Error("Failed to create ZIP file");
