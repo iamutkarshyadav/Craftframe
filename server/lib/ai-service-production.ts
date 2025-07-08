@@ -1,5 +1,3 @@
-import { generateVideoWithHuggingFace } from "./huggingface-video";
-
 export interface GenerationRequest {
   prompt: string;
   model: string;
@@ -137,13 +135,16 @@ export async function generateVideo(
 
     // Try Hugging Face Models
     try {
+      const { generateVideoWithHuggingFace } = await import(
+        "./huggingface-video"
+      );
       const hfResult = await generateVideoWithHuggingFace(request);
       if (hfResult.url) {
         console.log("Successfully generated video with Hugging Face");
         return hfResult;
       }
     } catch (error) {
-      console.log("Hugging Face failed, using enhanced fallback");
+      console.log("Hugging Face failed, using enhanced fallback:", error);
     }
 
     // Enhanced fallback with better video selection
