@@ -164,6 +164,70 @@ export function isServiceConfigured(): boolean {
   return true;
 }
 
+// Get prompt-based demo video that somewhat matches the prompt
+export function getPromptBasedDemoVideo(
+  prompt: string,
+  generationId: string,
+): GenerationResult {
+  const lowercasePrompt = prompt.toLowerCase();
+
+  // Choose video based on prompt keywords
+  let videoUrl = "";
+
+  if (
+    lowercasePrompt.includes("nature") ||
+    lowercasePrompt.includes("forest") ||
+    lowercasePrompt.includes("tree")
+  ) {
+    videoUrl =
+      "https://player.vimeo.com/external/372432690.hd.mp4?s=7f9e1b2f8a5c6d4e3f2a1b9c8d7e6f5a4b3c2d1e&profile_id=175";
+  } else if (
+    lowercasePrompt.includes("water") ||
+    lowercasePrompt.includes("ocean") ||
+    lowercasePrompt.includes("wave")
+  ) {
+    videoUrl =
+      "https://player.vimeo.com/external/394240494.hd.mp4?s=1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f&profile_id=175";
+  } else if (
+    lowercasePrompt.includes("city") ||
+    lowercasePrompt.includes("urban") ||
+    lowercasePrompt.includes("building")
+  ) {
+    videoUrl =
+      "https://player.vimeo.com/external/397666885.hd.mp4?s=2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a&profile_id=175";
+  } else if (
+    lowercasePrompt.includes("space") ||
+    lowercasePrompt.includes("star") ||
+    lowercasePrompt.includes("planet")
+  ) {
+    videoUrl =
+      "https://player.vimeo.com/external/419309308.hd.mp4?s=3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b&profile_id=175";
+  } else if (
+    lowercasePrompt.includes("fire") ||
+    lowercasePrompt.includes("flame") ||
+    lowercasePrompt.includes("burn")
+  ) {
+    videoUrl =
+      "https://player.vimeo.com/external/372432690.hd.mp4?s=4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c&profile_id=175";
+  } else {
+    // Default videos for general prompts
+    const defaultVideos = [
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+    ];
+    videoUrl = defaultVideos[Math.floor(Math.random() * defaultVideos.length)];
+  }
+
+  console.log(`Selected demo video for prompt "${prompt}": ${videoUrl}`);
+
+  return {
+    id: generationId,
+    url: videoUrl,
+    status: "completed",
+  };
+}
+
 // Get demo result for when generation fails
 export function getDemoResult(
   type: "image" | "video",
@@ -177,12 +241,6 @@ export function getDemoResult(
     "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1024&h=1024&fit=crop&auto=format",
   ];
 
-  const demoVideos = [
-    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
-  ];
-
   if (type === "image") {
     return {
       id: generationId,
@@ -190,10 +248,6 @@ export function getDemoResult(
       status: "completed",
     };
   } else {
-    return {
-      id: generationId,
-      url: demoVideos[Math.floor(Math.random() * demoVideos.length)],
-      status: "completed",
-    };
+    return getPromptBasedDemoVideo("generic", generationId);
   }
 }
