@@ -211,9 +211,9 @@ export const handleGenerationHistory = [
 ];
 
 // Toggle like on generation
-export const handleToggleLike: RequestHandler = [
+export const handleToggleLike = [
   authenticate,
-  async (req, res) => {
+  async (req: any, res: any) => {
     try {
       const user = (req as any).user;
       const { id } = req.params;
