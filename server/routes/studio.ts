@@ -89,17 +89,11 @@ export const handleImageGeneration = [
         size,
       };
 
-      // Generate image
-      let result;
-      if (isReplicateConfigured()) {
-        console.log("Using Replicate API for image generation");
-        result = await generateImage(request);
-      } else {
-        console.log("Using demo mode for image generation");
-        // Simulate delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        result = getDemoResult("image", generation.id);
-      }
+      // Generate image with Pollinations
+      console.log("Using Pollinations API for image generation");
+      // Simulate small delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const result = await generateImage(request);
 
       // Update generation with result
       updateGeneration(generation.id, {
