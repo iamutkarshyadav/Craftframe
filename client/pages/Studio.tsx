@@ -367,12 +367,10 @@ export default function Studio() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="stable-video">
-                              Stable Video
+                            <SelectItem value="huggingface">
+                              Hugging Face (Free)
                             </SelectItem>
-                            <SelectItem value="animatediff">
-                              AnimateDiff
-                            </SelectItem>
+                            <SelectItem value="demo">Demo Videos</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
