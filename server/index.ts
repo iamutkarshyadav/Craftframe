@@ -91,5 +91,8 @@ export function createServer() {
   app.get("/api/dashboard/stats", getUserStats);
   app.post("/api/dashboard/generations/:id/favorite", toggleFavorite);
 
+  // Image proxy route
+  app.get("/api/image-proxy", handleImageProxy);
+
   return app;
 }
