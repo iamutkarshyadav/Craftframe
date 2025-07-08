@@ -205,113 +205,25 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Generated Content Showcase */}
+      {/* AI Content Showcase */}
       <section id="showcase" className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-gradient">AI Creations</span> by Our Community
+            Stunning <span className="text-gradient">AI Creations</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover amazing content created by artists and creators using our
-            AI models
+            Experience the power of our AI models through these breathtaking
+            generated images and videos
           </p>
         </div>
 
-        {/* Carousel */}
-        <div className="relative max-w-6xl mx-auto">
-          <div className="overflow-hidden rounded-2xl">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {sampleGenerations.map((item, index) => (
-                <div key={item.id} className="w-full flex-shrink-0">
-                  <Card className="bg-surface border-border mx-2">
-                    <div className="relative">
-                      {item.type === "image" ? (
-                        <img
-                          src={item.url}
-                          alt={item.prompt}
-                          className="w-full h-64 md:h-80 object-cover rounded-t-lg"
-                        />
-                      ) : (
-                        <div className="w-full h-64 md:h-80 bg-gradient-ai rounded-t-lg flex items-center justify-center">
-                          <Play className="w-16 h-16 text-white" />
-                        </div>
-                      )}
-                      <div className="absolute top-4 left-4">
-                        <Badge
-                          variant={
-                            item.type === "image" ? "default" : "secondary"
-                          }
-                        >
-                          {item.type === "image" ? (
-                            <Image className="w-3 h-3 mr-1" />
-                          ) : (
-                            <Video className="w-3 h-3 mr-1" />
-                          )}
-                          {item.type}
-                        </Badge>
-                      </div>
-                      <div className="absolute top-4 right-4 flex space-x-2">
-                        <Button size="sm" variant="secondary" className="p-2">
-                          <Heart
-                            className={`w-4 h-4 ${item.liked ? "fill-red-500 text-red-500" : ""}`}
-                          />
-                        </Button>
-                        <Button size="sm" variant="secondary" className="p-2">
-                          <Download className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        "{item.prompt}"
-                      </p>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{item.model}</span>
-                        <span>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Navigation buttons */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10"
-            onClick={prevSlide}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
-            onClick={nextSlide}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-
-          {/* Dots indicator */}
-          <div className="flex justify-center mt-6 space-x-2">
-            {sampleGenerations.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentSlide ? "bg-primary" : "bg-muted"
-                }`}
-                onClick={() => navigateToSlide(index)}
-              />
-            ))}
-          </div>
-        </div>
+        <ShowcaseCarousel
+          content={featuredContent}
+          autoPlay={true}
+          autoPlayInterval={6000}
+          showPrompts={true}
+          className="max-w-6xl mx-auto"
+        />
       </section>
 
       {/* Use Cases Section */}
