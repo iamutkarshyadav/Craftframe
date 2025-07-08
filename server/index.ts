@@ -72,5 +72,11 @@ export function createServer() {
   app.post("/api/direct/image", handleDirectImageGeneration);
   app.post("/api/direct/video", handleDirectVideoGeneration);
 
+  // Studio routes (new clean API)
+  app.post("/api/studio/image", handleStudioImageGeneration);
+  app.post("/api/studio/video", handleStudioVideoGeneration);
+  app.get("/api/studio/image/:id", handleStudioImageStatus);
+  app.get("/api/studio/video/:id", handleStudioVideoStatus);
+
   return app;
 }
