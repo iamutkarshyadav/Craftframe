@@ -192,32 +192,8 @@ export const downloadAsZip = async (
     // For now, we'll use individual downloads
     console.log("ZIP download requested for:", generations.length, "files");
     await downloadBatch(generations);
-    const zip = new JSZip();
-
-    const downloadPromises = generations.map(async (generation) => {
-      try {
-        const response = await fetch(generation.url);
-        const blob = await response.blob();
-        const extension = generation.type === "image" ? "png" : "mp4";
-        const filename = generateFilename(generation, extension);
-        zip.file(filename, blob);
-      } catch (error) {
-        console.error(`Failed to add ${generation.id} to zip:`, error);
-      }
-    });
-
-    await Promise.all(downloadPromises);
-
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(zipBlob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${zipName}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // For demo purposes, we'll download files individually
+    return;
   } catch (error) {
     console.error("ZIP download failed:", error);
     throw new Error("Failed to create ZIP file");
