@@ -36,13 +36,13 @@ export const handleRegister: RequestHandler = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user with generous credits for testing
     const user = createUser({
       email,
       name,
       password: hashedPassword,
-      plan: "free",
-      credits: 10, // Free tier gets 10 credits
+      plan: "pro",
+      credits: 500, // Give new users plenty of credits for testing
     });
 
     // Generate JWT token
