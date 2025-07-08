@@ -136,7 +136,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <DialogTitle className="text-2xl font-bold">
-            Welcome to AICreate
+            Welcome to CraftFrame
           </DialogTitle>
           <DialogDescription className="text-base">
             Create an account or sign in to start generating amazing AI content

@@ -26,7 +26,7 @@ export default function NotFound() {
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            AICreate
+            CraftFrame
           </span>
         </Link>
 

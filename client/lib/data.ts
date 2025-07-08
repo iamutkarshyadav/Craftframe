@@ -133,7 +133,7 @@ export const pricingTiers: PricingTier[] = [
 export const testimonials: Testimonial[] = [
   {
     content:
-      "AICreate has revolutionized my content creation workflow. The quality is incredible and it's so fast!",
+      "CraftFrame has revolutionized my content creation workflow. The quality is incredible and it's so fast!",
     author: "Sarah Johnson",
     role: "Content Creator",
     avatar: "SJ",

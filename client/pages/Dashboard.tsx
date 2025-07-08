@@ -271,7 +271,7 @@ export default function Dashboard() {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 mx-auto mb-4">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
-            <CardTitle className="text-2xl">Welcome to AICreate</CardTitle>
+            <CardTitle className="text-2xl">Welcome to CraftFrame</CardTitle>
             <CardDescription>
               Sign in to view your AI creations and analytics dashboard
             </CardDescription>
@@ -308,7 +308,7 @@ export default function Dashboard() {
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  AICreate
+                  CraftFrame
                 </span>
               </Link>
               <Separator orientation="vertical" className="h-6" />

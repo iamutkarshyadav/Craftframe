@@ -526,7 +526,7 @@ export default function Studio() {
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  AICreate
+                  CraftFrame
                 </span>
               </Link>
               <Separator orientation="vertical" className="h-6" />

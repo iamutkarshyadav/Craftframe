@@ -146,7 +146,7 @@ const interactiveDemo = {
 const testimonials = [
   {
     content:
-      "AICreate has completely transformed our content pipeline. We're creating marketing assets 10x faster than before with incredible quality.",
+      "CraftFrame has completely transformed our content pipeline. We're creating marketing assets 10x faster than before with incredible quality.",
     author: "Sarah Chen",
     role: "Creative Director",
     company: "TechFlow Inc.",
@@ -924,7 +924,7 @@ export default function Index() {
               Endless Creative Possibilities
             </h2>
             <p className="text-lg text-muted-foreground">
-              See how professionals across industries use AICreate
+              See how professionals across industries use CraftFrame
             </p>
           </div>
 
@@ -1132,7 +1132,7 @@ export default function Index() {
               Loved by Creators Worldwide
             </h2>
             <p className="text-lg text-muted-foreground">
-              See what our community is saying about AICreate
+              See what our community is saying about CraftFrame
             </p>
           </div>
 
@@ -1384,7 +1384,7 @@ export default function Index() {
 
           <div className="border-t border-border/40 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 AICreate. All rights reserved.
+              © 2024 CraftFrame. All rights reserved.
             </p>
             <div className="flex items-center space-x-4 mt-4 sm:mt-0">
               <a
