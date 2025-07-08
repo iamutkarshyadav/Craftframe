@@ -311,6 +311,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by the CraftFrame Team**
+**Made with ❤️ by Utkarsh Yadav**
 
 _Transform your creative vision into reality with the power of AI._
