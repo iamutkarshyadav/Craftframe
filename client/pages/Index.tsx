@@ -27,13 +27,9 @@ import {
   Download,
   ExternalLink,
 } from "lucide-react";
-import {
-  features,
-  pricingTiers,
-  testimonials,
-  sampleGenerations,
-  useCases,
-} from "@/lib/data";
+import { features, pricingTiers, testimonials, useCases } from "@/lib/data";
+import { getFeaturedContent, getRandomContent } from "@/lib/showcase-data";
+import { ShowcaseCarousel } from "@/components/showcase-carousel";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Index() {
