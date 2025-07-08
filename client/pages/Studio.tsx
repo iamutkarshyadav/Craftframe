@@ -488,6 +488,25 @@ export default function Studio() {
                                 src={generation.url}
                                 alt={generation.prompt}
                                 className="w-full aspect-video object-cover"
+                                onError={(e) => {
+                                  console.error(
+                                    "Image failed to load:",
+                                    generation.url,
+                                  );
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.parentElement?.insertAdjacentHTML(
+                                    "beforeend",
+                                    `<div class="w-full aspect-video bg-red-100 flex items-center justify-center">
+                                      <p class="text-red-600 text-sm">Image failed to load</p>
+                                    </div>`,
+                                  );
+                                }}
+                                onLoad={() => {
+                                  console.log(
+                                    "Image loaded successfully:",
+                                    generation.url,
+                                  );
+                                }}
                               />
                             ) : (
                               <video
