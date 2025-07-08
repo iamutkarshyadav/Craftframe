@@ -39,6 +39,8 @@ import { useAuth } from "@/hooks/use-auth";
 export default function Index() {
   const [activeTab, setActiveTab] = useState<"image" | "video">("image");
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   // Auto-advance carousel
   useEffect(() => {
