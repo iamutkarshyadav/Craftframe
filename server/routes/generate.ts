@@ -138,9 +138,9 @@ export const handleGenerate = [
 ];
 
 // Get generation status
-export const handleGenerationStatus: RequestHandler = [
+export const handleGenerationStatus = [
   authenticate,
-  async (req, res) => {
+  async (req: any, res: any) => {
     try {
       const user = (req as any).user;
       const { id } = req.params;
