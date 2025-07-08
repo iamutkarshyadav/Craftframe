@@ -89,7 +89,20 @@ export async function generateVideo(
   try {
     console.log("Generating video with production models:", request);
 
-    // Try Pika Labs first (best quality)
+    // If Hugging Face model is specifically requested, try it first
+    if (request.model === "huggingface") {
+      try {
+        const hfResult = await generateVideoWithHuggingFace(request);
+        if (hfResult.url) {
+          console.log("Successfully generated video with Hugging Face");
+          return hfResult;
+        }
+      } catch (error) {
+        console.log("Hugging Face failed, trying other models:", error);
+      }
+    }
+
+    // Try Pika Labs (best quality)
     try {
       const pikaResult = await generateWithPika(request);
       if (pikaResult.url) {
