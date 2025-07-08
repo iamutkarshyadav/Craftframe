@@ -322,13 +322,13 @@ export default function Studio() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="flux-schnell">
-                              FLUX Schnell (Fast)
+                            <SelectItem value="flux">
+                              FLUX (Pollinations)
                             </SelectItem>
-                            <SelectItem value="flux-dev">
-                              FLUX Dev (Quality)
+                            <SelectItem value="turbo">Turbo (Fast)</SelectItem>
+                            <SelectItem value="standard">
+                              Standard (Balanced)
                             </SelectItem>
-                            <SelectItem value="sdxl">SDXL (Stable)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
