@@ -44,16 +44,16 @@ export async function generateImage(
       case "flux":
       case "flux-schnell":
       case "flux-dev":
-        // Pollinations FLUX endpoint
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&seed=${timestamp}`;
+        // Pollinations FLUX endpoint - no watermarks
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&private=true&seed=${timestamp}`;
         break;
       case "turbo":
-        // Turbo model for faster generation
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&seed=${timestamp}`;
+        // Turbo model for faster generation - no watermarks
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=turbo&nologo=true&private=true&seed=${timestamp}`;
         break;
       default:
-        // Default to standard Pollinations endpoint (most reliable)
-        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${timestamp}`;
+        // Default to standard Pollinations endpoint - no watermarks
+        imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&nologo=true&private=true&seed=${timestamp}`;
     }
 
     console.log("Generated image URL:", imageUrl);
