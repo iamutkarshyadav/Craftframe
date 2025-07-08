@@ -172,9 +172,9 @@ export const handleGenerationStatus = [
 ];
 
 // Get user's generation history
-export const handleGenerationHistory: RequestHandler = [
+export const handleGenerationHistory = [
   authenticate,
-  async (req, res) => {
+  async (req: any, res: any) => {
     try {
       const user = (req as any).user;
       const { page = 1, limit = 20 } = req.query;
