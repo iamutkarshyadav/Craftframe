@@ -59,6 +59,7 @@ export function createServer() {
   app.post("/api/auth/login", handleLogin);
   app.get("/api/auth/me", handleMe);
   app.post("/api/auth/logout", handleLogout);
+  app.post("/api/auth/create-demo", handleCreateDemoUser);
 
   // Generation routes (legacy)
   app.post("/api/generate", handleGenerate);
