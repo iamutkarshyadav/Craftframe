@@ -6,6 +6,7 @@ import {
   createGeneration,
   updateGeneration,
   findGenerationById,
+  findGenerationsByUserId,
 } from "../lib/database";
 import {
   generateImage,
@@ -244,3 +245,32 @@ export const handleGetImageStatus = [
 
 // Get video generation status (same as image for now)
 export const handleGetVideoStatus = handleGetImageStatus;
+
+// Get recent generations for studio
+export const handleGetRecentGenerations = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const { limit = 10 } = req.query;
+
+      let generations = findGenerationsByUserId(user.id);
+
+      // Sort by creation date (newest first) and limit results
+      generations = generations
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )
+        .slice(0, parseInt(limit));
+
+      res.json({
+        generations,
+        total: generations.length,
+      });
+    } catch (error) {
+      console.error("Get recent generations error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];
