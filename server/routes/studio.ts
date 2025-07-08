@@ -6,6 +6,7 @@ import {
   createGeneration,
   updateGeneration,
   findGenerationById,
+  findGenerationsByUserId,
 } from "../lib/database";
 import {
   generateImage,
@@ -13,7 +14,7 @@ import {
   isServiceConfigured,
   getDemoResult,
   GenerationRequest,
-} from "../lib/ai-service-v3";
+} from "../lib/ai-service-production";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
 
@@ -46,20 +47,33 @@ export const handleImageGeneration = [
   async (req: any, res: any) => {
     try {
       const user = req.user;
-      const { prompt, model = "flux-schnell", size = "1024x1024" } = req.body;
+      const {
+        prompt,
+        model = "flux-dev",
+        size = "1024x1024",
+        category = "photorealistic",
+        steps,
+        cfg_scale,
+      } = req.body;
 
       if (!prompt || prompt.trim().length === 0) {
         return res.status(400).json({ message: "Prompt is required" });
       }
 
-      if (prompt.length > 500) {
+      if (prompt.length > 1000) {
         return res.status(400).json({
-          message: "Prompt must be less than 500 characters",
+          message: "Prompt must be less than 1000 characters",
         });
       }
 
-      // Check credits
-      const cost = 1;
+      // Check credits based on model
+      const modelCredits: { [key: string]: number } = {
+        "flux-pro": 3,
+        "flux-dev": 2,
+        "flux-schnell": 1,
+      };
+      const cost = modelCredits[model] || 1;
+
       if (user.credits < cost) {
         return res.status(400).json({
           message: "Insufficient credits",
@@ -87,39 +101,61 @@ export const handleImageGeneration = [
         prompt: prompt.trim(),
         model,
         size,
+        category,
+        steps,
+        cfg_scale,
       };
 
-      // Generate image with Pollinations
-      console.log("Using Pollinations API for image generation");
-      // Simulate small delay for better UX
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const result = await generateImage(request);
+      console.log("Image generation request:", request);
 
-      // Update generation with result
-      updateGeneration(generation.id, {
-        url: result.url || "",
-        status: result.status === "completed" ? "completed" : "failed",
-      });
+      // Generate image with enhanced AI service
+      try {
+        const result = await generateImage(request);
 
-      if (result.status === "failed") {
-        // Refund credits on failure
+        // Update generation with result
+        updateGeneration(generation.id, {
+          url: result.url || "",
+          status: result.status === "completed" ? "completed" : "failed",
+        });
+
+        if (result.status === "failed") {
+          // Refund credits on failure
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
+        }
+
+        res.json({
+          id: generation.id,
+          url: result.url,
+          status: result.status,
+          metadata: result.metadata,
+          message:
+            result.status === "completed"
+              ? "Image generated successfully"
+              : "Image generation failed",
+        });
+      } catch (error) {
+        console.error("Image generation error:", error);
+
+        // Refund credits on error
         const currentUser = findUserById(user.id);
         if (currentUser) {
           updateUser(user.id, { credits: currentUser.credits + cost });
         }
-      }
 
-      res.json({
-        id: generation.id,
-        url: result.url,
-        status: result.status,
-        message:
-          result.status === "completed"
-            ? "Image generated successfully"
-            : "Image generation failed",
-      });
+        updateGeneration(generation.id, {
+          status: "failed",
+        });
+
+        res.status(500).json({
+          message: "Image generation failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
     } catch (error) {
-      console.error("Image generation error:", error);
+      console.error("Image generation handler error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
@@ -131,20 +167,33 @@ export const handleVideoGeneration = [
   async (req: any, res: any) => {
     try {
       const user = req.user;
-      const { prompt, model = "stable-video", duration = 3 } = req.body;
+      const {
+        prompt,
+        model = "huggingface",
+        duration = 3,
+        fps = 24,
+      } = req.body;
 
       if (!prompt || prompt.trim().length === 0) {
         return res.status(400).json({ message: "Prompt is required" });
       }
 
-      if (prompt.length > 500) {
+      if (prompt.length > 1000) {
         return res.status(400).json({
-          message: "Prompt must be less than 500 characters",
+          message: "Prompt must be less than 1000 characters",
         });
       }
 
-      // Check credits
-      const cost = 3;
+      // Check credits based on model
+      const modelCredits: { [key: string]: number } = {
+        huggingface: 4,
+        pika: 8,
+        luma: 6,
+        runway: 10,
+        demo: 0,
+      };
+      const cost = modelCredits[model] || 3;
+
       if (user.credits < cost) {
         return res.status(400).json({
           message: "Insufficient credits",
@@ -164,47 +213,71 @@ export const handleVideoGeneration = [
         cost,
       });
 
-      // Deduct credits
-      updateUser(user.id, { credits: user.credits - cost });
+      // Deduct credits (except for demo)
+      if (cost > 0) {
+        updateUser(user.id, { credits: user.credits - cost });
+      }
 
       // Start generation
       const request: GenerationRequest = {
         prompt: prompt.trim(),
         model,
         duration,
+        fps,
       };
 
-      // Generate video with free API
-      console.log("Using free video generation API");
-      // Simulate delay for video processing
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      const result = await generateVideo(request);
+      console.log("Video generation request:", request);
 
-      // Update generation with result
-      updateGeneration(generation.id, {
-        url: result.url || "",
-        status: result.status === "completed" ? "completed" : "failed",
-      });
+      // Generate video with enhanced AI service
+      try {
+        const result = await generateVideo(request);
 
-      if (result.status === "failed") {
-        // Refund credits on failure
-        const currentUser = findUserById(user.id);
-        if (currentUser) {
-          updateUser(user.id, { credits: currentUser.credits + cost });
+        // Update generation with result
+        updateGeneration(generation.id, {
+          url: result.url || "",
+          status: result.status === "completed" ? "completed" : "failed",
+        });
+
+        if (result.status === "failed" && cost > 0) {
+          // Refund credits on failure
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
         }
-      }
 
-      res.json({
-        id: generation.id,
-        url: result.url,
-        status: result.status,
-        message:
-          result.status === "completed"
-            ? "Video generated successfully"
-            : "Video generation failed",
-      });
+        res.json({
+          id: generation.id,
+          url: result.url,
+          status: result.status,
+          metadata: result.metadata,
+          message:
+            result.status === "completed"
+              ? "Video generated successfully"
+              : "Video generation failed",
+        });
+      } catch (error) {
+        console.error("Video generation error:", error);
+
+        // Refund credits on error
+        if (cost > 0) {
+          const currentUser = findUserById(user.id);
+          if (currentUser) {
+            updateUser(user.id, { credits: currentUser.credits + cost });
+          }
+        }
+
+        updateGeneration(generation.id, {
+          status: "failed",
+        });
+
+        res.status(500).json({
+          message: "Video generation failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
     } catch (error) {
-      console.error("Video generation error:", error);
+      console.error("Video generation handler error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
@@ -242,5 +315,34 @@ export const handleGetImageStatus = [
   },
 ];
 
-// Get video generation status (same as image for now)
+// Get video generation status (same as image)
 export const handleGetVideoStatus = handleGetImageStatus;
+
+// Get recent generations for studio
+export const handleGetRecentGenerations = [
+  authenticate,
+  async (req: any, res: any) => {
+    try {
+      const user = req.user;
+      const { limit = 10 } = req.query;
+
+      let generations = findGenerationsByUserId(user.id);
+
+      // Sort by creation date (newest first) and limit results
+      generations = generations
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )
+        .slice(0, parseInt(limit));
+
+      res.json({
+        generations,
+        total: generations.length,
+      });
+    } catch (error) {
+      console.error("Get recent generations error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+];

@@ -31,6 +31,7 @@ import {
   handleVideoGeneration as handleStudioVideoGeneration,
   handleGetImageStatus as handleStudioImageStatus,
   handleGetVideoStatus as handleStudioVideoStatus,
+  handleGetRecentGenerations,
 } from "./routes/studio";
 import {
   getUserGenerations,
@@ -85,6 +86,7 @@ export function createServer() {
   app.post("/api/studio/video", handleStudioVideoGeneration);
   app.get("/api/studio/image/:id", handleStudioImageStatus);
   app.get("/api/studio/video/:id", handleStudioVideoStatus);
+  app.get("/api/studio/recent", handleGetRecentGenerations);
 
   // Dashboard routes
   app.get("/api/dashboard/generations", getUserGenerations);
