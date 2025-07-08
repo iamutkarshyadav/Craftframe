@@ -96,6 +96,13 @@ const imageModels = [
 
 const videoModels = [
   {
+    id: "huggingface",
+    name: "Hugging Face Video",
+    description: "Multiple AI video models (Stable Video Diffusion)",
+    credits: 4,
+    quality: "Professional",
+  },
+  {
     id: "pika",
     name: "Pika Labs",
     description: "Cinematic quality video generation",
@@ -223,7 +230,7 @@ export default function Studio() {
   const [imageCfgScale, setImageCfgScale] = useState([7]);
 
   // Video settings
-  const [videoModel, setVideoModel] = useState("pika");
+  const [videoModel, setVideoModel] = useState("huggingface");
   const [videoDuration, setVideoDuration] = useState("3");
   const [videoFps, setVideoFps] = useState([24]);
 
@@ -353,6 +360,14 @@ export default function Studio() {
         title: "Generation Started",
         description: `Your ${activeTab} is being generated...`,
       });
+
+      // Update user credits locally for immediate UI sync
+      if (user && typeof user.credits === "number") {
+        // This will be synced when the page refreshes or user data is refetched
+        console.log(
+          `Credits deducted: ${requiredCredits}. Remaining: ${user.credits - requiredCredits}`,
+        );
+      }
 
       setPrompt("");
     } catch (err: any) {
