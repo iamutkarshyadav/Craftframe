@@ -294,21 +294,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Deployment Guide](docs/DEPLOYMENT.md)
 - [API Reference](docs/API_REFERENCE.md)
 
-### Community
-
-- **Issues**: [GitHub Issues](https://github.com/your-repo/craftframe/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/craftframe/discussions)
-- **Email**: support@craftframe.app
-
----
-
-## 🙏 **Acknowledgments**
-
-- **HuggingFace**: AI model infrastructure
-- **Vercel**: Hosting and deployment platform
-- **Pollinations**: Reliable image generation API
-- **React Community**: Amazing ecosystem and tools
-
 ---
 
 **Made with ❤️ by Utkarsh Yadav**
